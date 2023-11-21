@@ -1,4 +1,38 @@
-body{
-    /* checking if styleshett is linked */
-    background-color: aqua;
+*{
+    margin: 0;
+    padding: 0;
 }
+
+
+:root{
+    /* basic colors here */
+}
+
+
+
+.board{
+    background-color: rgb(60, 61, 63);
+    height: 50vh;
+    min-width: 50vw;
+}
+
+
+.sound-rows>li{
+    display: flex;
+    flex-direction:row nowrap;
+}
+
+.sound-rows>li>button{
+    margin:0.5em 0.5em;
+}
+
+
+.tile{
+    height: 20px;
+    width: 20px;
+    border: 1px solid black;
+    border-radius: 20%;
+}
+
+
+
