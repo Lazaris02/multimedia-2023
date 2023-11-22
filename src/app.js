@@ -5,10 +5,21 @@ const tiles = document.querySelectorAll('.tile');
 const sound_rows = document.querySelector('.sound-rows');
 const play_button = document.querySelector('#play-button');
 const context = new AudioContext();
+const relative_path ='../assets/audio/';
+
+// creates a 8x16 array -->1 row for every sound + 16 tiles 
+// for every sound. if I click on a tile it sets the respective
+// board_tile position into a 1. If I unclick it goes back to 0
+const board_tiles = Array(8).fill().map(()=> new Array(16).fill(0));
+let play =0;
 
 
-// -- sound collections -- 
-let kit_1 = [];
+// -- sound collections --
+
+const fileNames =['kick_1.wav','snare_1.wav'];
+
+
+let kit_1 = []; //will contain the sounds.
 
 // -- variables for collections --
 
@@ -18,7 +29,8 @@ let kit_1 = [];
  sound_rows.addEventListener('click',(e)=>{
     if(e.target.classList.contains('tile')){
         e.target.classList.toggle('tile-on');
-        playSound(0);
+        const parent = e.target.parentElement;
+        board_tiles[+parent.dataset.row][+e.target.dataset.tile] =+!board_tiles[+parent.dataset.row][+e.target.dataset.tile];
     }
  });
 
@@ -26,35 +38,36 @@ let kit_1 = [];
  play_button.addEventListener('click',(e)=>{
     // if play button is clicked change its color
     e.target.classList.toggle('func-button-on');
+    play = !play;
+    boardPlay();
  });
 
 
 
-
-
-
-
  // -- functions --
-function initialize_sounds(){
-    // fetches + decoded + initialized all our sounds
-    // might need to be an async func 
-    // might need to sync the fetches
-    fetch("../assets/audio/kick_1.wav")
-        .then(audio=>audio.arrayBuffer())
-        .then(buffer=>context.decodeAudioData(buffer))
-        .then(decoded =>{
-            kit_1.push(decoded);
-            console.log(kit_1[0]);
-        });
-    fetch("../assets/audio/snare_1.wav")
-        .then(audio=>audio.arrayBuffer())
-        .then(buffer=>context.decodeAudioData(buffer))
-        .then(decoded =>{
-            kit_1.push(decoded);
-            console.log(kit_1[1]);
-        });
 
+
+ async function getSound(path){
+    // uses the fetch api to fetch the sounds from the url we give it
+    const response = await fetch(path);
+    const buffer = await response.arrayBuffer();
+    const decodedAudio = await context.decodeAudioData(buffer);
+    return decodedAudio;
 }
+
+
+async function initialize_sounds(path_array){
+    // preloads all the sounds we will need in the kits array
+    for(let name of fileNames){
+        console.log(`pushing ${relative_path}${name}`);
+        const sound = await getSound(relative_path+name);
+        kit_1.push(sound);
+    }
+    console.log('sounds ready');
+}
+
+
+
 
 function playSound(kit_position){
     const sound = context.createBufferSource();
@@ -64,8 +77,18 @@ function playSound(kit_position){
 }
 
 
+function boardPlay(){
+    while(play){
+        console.log(play);
+        if(play == 0){return;}
+    }
+}
 
+
+console.log(board_tiles[0].length);
 initialize_sounds();
+
+
 
 
 
