@@ -17,25 +17,34 @@
         <h1>Name of DrumMachine</h1>
     </header>
 
-    <div class="board">
-        <button id="play-button">Play</button>
+    <div id="board">
+        <button id="play-button" class="func-button">Play</button>
         <ul class="sound-rows">
-            <li id="sound-1">
-                <button class="tile"></button>
-                <button class="tile"></button>
-                <button class="tile"></button>
-                <button class="tile"></button>
-            </li>
-            <li id="sound-2">
-                <button class="tile"></button>
-                <button class="tile"></button>
-                <button class="tile"></button>
-                <button class="tile"></button>
-            </li>
+            <div class="row">
+                <span class="sound-name">Snare</span>
+                <li id="sound-1">
+                    <button class="tile"></button>
+                    <button class="tile"></button>
+                    <button class="tile"></button>
+                    <button class="tile"></button>
+                </li>
+                <label for="range-1">Volume</label>
+                <input type="range" id="range-1" min="0" max="1" step="0.01">
+            </div>
 
+            <div class="row">
+                <span class="sound-name">Kick</span>
+                <li id="sound-2">
+                    <button class="tile"></button>
+                    <button class="tile"></button>
+                    <button class="tile"></button>
+                    <button class="tile"></button>
+                </li>
+                <label for="range-2">Volume</label>
+                <input type="range" id="range-2" min="0" max="1" step="0.01">
+            </div>
         </ul>
     </div>
-
     <body>
 
     </body>
