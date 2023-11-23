@@ -1,4 +1,86 @@
-body{
-    /* checking if styleshett is linked */
-    background-color: aqua;
+*{
+    margin: 0;
+    padding: 0;
 }
+
+
+:root{
+    /* basic colors here */
+    --text: #ffffff;
+    --background: #101410;
+    --primary: #36453f;
+    --secondary: #1f2728;
+    --accent: #7c9598;
+}
+
+/* generic styling */
+h1{
+    color:var(--text);
+}
+
+body{
+    background-color: var(--background);
+}
+
+ul{
+    list-style: none;
+}
+
+
+
+#board{
+    background-color:var(--accent);
+    height: 50vh;
+    min-width: 50vw;
+}
+
+.func-button{
+    background-color:var(--accent);
+    padding: 0.5rem;
+    color: var(--text);
+    font-weight: 600;
+    border:1px solid var(--secondary);
+    border-radius:20px;
+}
+
+.func-button-on{
+    background-color: var(--background);
+
+}
+
+
+
+
+/* for the tile-rows */
+
+.row{
+    display: flex;
+    flex-direction:row nowrap;
+}
+
+.sound-name{
+    width: 50px;
+}
+
+.row>li>button{
+    margin:0 0.2em;
+}
+
+.tile{
+    /* styling of tiles */
+    height: 20px;
+    width: 20px;
+    border: 1px solid var(--secondary);
+    border-radius: 20%;
+    background-color: var(--text);
+}
+
+.tile-on{
+    /* changes the tile color if clicked */
+    background-color: var(--background);
+}
+
+.sound-name{
+    color:var(--text);
+}
+
