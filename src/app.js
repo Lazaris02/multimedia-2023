@@ -11,7 +11,8 @@ const relative_path ='../assets/audio/';
 // for every sound. if I click on a tile it sets the respective
 // board_tile position into a 1. If I unclick it goes back to 0
 const board_tiles = Array(8).fill().map(()=> new Array(16).fill(0));
-let play =0;
+let play = false;
+let play_interval;
 
 
 // -- sound collections --
@@ -38,9 +39,18 @@ let kit_1 = []; //will contain the sounds.
  play_button.addEventListener('click',(e)=>{
     // if play button is clicked change its color
     e.target.classList.toggle('func-button-on');
-    play = !play;
-    boardPlay();
+    play=!play;
+    console.log(play,' play',typeof play);
+    if(play){
+        play_interval=setInterval(playBoard,1000);
+    }
+    else{
+        console.log('hi from stopping interval!');
+        clearInterval(play_interval);
+    }
  });
+
+
 
 
 
@@ -77,12 +87,12 @@ function playSound(kit_position){
 }
 
 
-function boardPlay(){
-    while(play){
-        console.log(play);
-        if(play == 0){return;}
-    }
+function playBoard(){
+    console.log('hi');
 }
+
+
+
 
 
 console.log(board_tiles[0].length);
