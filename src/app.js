@@ -63,7 +63,7 @@ let currSample = {};
     play=!play;
     console.log(play,' play',typeof play);
     if(play){
-        play_interval=setInterval(playBoard,1000);
+        play_interval=setInterval(playBoard,2000);
     }
     else{
         console.log('hi from stopping interval!');
@@ -77,6 +77,16 @@ let currSample = {};
 
  // -- functions --
 
+ function playBoard(){
+    console.log('playing board');
+   for(let [key,value] in Object.entries(currSample)){
+    console.log(`${key}: ${value}`);
+   }
+    
+}
+
+
+
 
  function updateCurrentSample(sound_row,time,add){
     // adds the sound to the time it should be played at
@@ -88,8 +98,20 @@ let currSample = {};
  }
 
 
+ function playFraction(fraction){
+    // is passed an array of samples to be played in sync
+    const sounds = context.createBufferSource();
+    for(let i of fraction){
+        console.log(typeof i);
+        sounds.buffer.add(i);
+    }
+    sounds.connect(context.destination);
+    sounds.start(context.currentTime);
+ }
+
+
  function playSound(kit_position){
-    // I play the sound that corresponds to the give row.
+    // play the sound that corresponds to a specific row.
     const sound = context.createBufferSource();
     sound.buffer = kit_1[kit_position];
     sound.connect(context.destination);
@@ -119,11 +141,10 @@ async function initialize_sounds(path_array){
 
 
 
-function playBoard(){
-    console.log('hi');
-}
 
-function initialize_board(){
+
+function initialize_curr_selection(){
+    // initializes the 
     for(let i=0; i<max_tiles; i++){
         currSample[i] = [];
     }
@@ -133,7 +154,7 @@ function initialize_board(){
 
 
 console.log(board_tiles[0].length);
-initialize_board();
+initialize_curr_selection();
 initialize_sounds();
 
 
