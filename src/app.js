@@ -12,6 +12,11 @@ const relative_path = '../assets/audio/';
 
 const max_tiles = 16;
 const sound_num = 8;
+
+const tempo  = 100; // our base tempo
+
+const time_signature = 4; // beats per bar
+
 // creates a 8x16 array -->1 row for every sound + 16 tiles 
 // for every sound. if I click on a tile it sets the respective
 // board_tile position into a 1. If I unclick it goes back to 0
@@ -23,7 +28,7 @@ let play_interval;
 
 
 // -- sound collections --
-const fileNames = ['kick_1.wav', 'snare_1.wav'];
+const fileNames = ['kick_1.wav', 'snare_1.wav','kick_1.wav', 'snare_1.wav','kick_1.wav', 'snare_1.wav','kick_1.wav', 'snare_1.wav'];
 const kit_1 = []; //will contain the sounds.
 
 // it is an object with 16 keys - 1 for each time
@@ -63,7 +68,10 @@ play_button.addEventListener('click', (e) => {
     play = !play;
     console.log(play, ' play', typeof play);
     if (play) {
-        play_interval = setInterval(playBoard, 2000);
+        playBoard();
+        let time_between = (60/tempo)*time_signature*1000;
+        const safety_space = -1500;
+        play_interval = setInterval(playBoard,time_between+safety_space);
     }
     else {
         console.log('hi from stopping interval!');
@@ -79,11 +87,13 @@ play_button.addEventListener('click', (e) => {
 
 function playBoard() {
     // for each step play the sound-strings in sync
-    // chekcs if the step contains somet
+    let delay = 0;
+    const space = calculateSoundDelay();
     for (let step of Object.values(currSample)) {
         if (step.some(item => { return item != 0; })) {
             console.log('nonempty', step);
-            playStep(step);
+            playStep(step,delay);
+            delay += space;
         }
     }
 
@@ -103,14 +113,14 @@ function updateCurrentSample(sound_row, time, add) {
 }
 
 
-function playStep(step) {
+function playStep(step,delay) {
     // is passed an array containing samples to be played in sync
     const sounds = step.filter(s=> s!=0);
     for(let s of sounds){
         let bs = context.createBufferSource();
         bs.buffer = s;
         bs.connect(context.destination);
-        bs.start(context.currentTime);
+        bs.start(context.currentTime + delay);
     }
     
 }
@@ -122,6 +132,12 @@ function playSound(kit_position) {
     sound.buffer = kit_1[kit_position];
     sound.connect(context.destination);
     sound.start(context.currentTime);
+}
+
+
+function calculateSoundDelay(){
+    //returns the time delay between 2 bars
+    return (60/tempo) * (time_signature/max_tiles);
 }
 
 
