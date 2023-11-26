@@ -70,8 +70,7 @@ play_button.addEventListener('click', (e) => {
     if (play) {
         playBoard();
         let time_between = (60/tempo)*time_signature*1000;
-        const safety_space = -1500;
-        play_interval = setInterval(playBoard,time_between+safety_space);
+        play_interval = setInterval(playBoard,time_between+90);
     }
     else {
         console.log('hi from stopping interval!');
@@ -93,8 +92,8 @@ function playBoard() {
         if (step.some(item => { return item != 0; })) {
             console.log('nonempty', step);
             playStep(step,delay);
-            delay += space;
         }
+        delay += space;
     }
 
 }
