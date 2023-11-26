@@ -6,16 +6,18 @@ const sound_rows = document.querySelector('.sound-rows');
 const play_button = document.querySelector('#play-button');
 const context = new AudioContext();
 const relative_path = '../assets/audio/';
-
-
-
+let timeManager; // the worker that manages the sound-queue
 
 const max_tiles = 16;
 const sound_num = 8;
-
 const tempo  = 100; // our base tempo
-
 const time_signature = 4; // beats per bar
+const check_queue = 20; // how frequently the worker should check the queue in millisec
+
+
+let bar_iterator = 0; //keeps track of the step that should be played
+let next_bar_time = 0.0; // the time that the next set of sounds will be scheduled to play
+let sample_queue = []; // the ahead-of-time queue the sounds are put in
 
 // creates a 8x16 array -->1 row for every sound + 16 tiles 
 // for every sound. if I click on a tile it sets the respective
@@ -48,14 +50,14 @@ sound_rows.addEventListener('click', (e) => {
         e.target.classList.toggle('tile-on');
         const parent = e.target.parentElement;
         const sound_row = +parent.dataset.row;
-        const time = +e.target.dataset.tile;
-        board_tiles[sound_row][time] = +!board_tiles[sound_row][time];
+        const curr_step = +e.target.dataset.tile;
+        board_tiles[sound_row][curr_step] = +!board_tiles[sound_row][curr_step];
         if (e.target.className == 'tile tile-on') {
             playSound(sound_row);
-            updateCurrentSample(sound_row, time, true);
+            updateCurrentSample(sound_row, curr_step, true);
         }
         else {
-            updateCurrentSample(sound_row, time, false);
+            updateCurrentSample(sound_row,curr_step, false);
         }
 
     }
@@ -68,13 +70,13 @@ play_button.addEventListener('click', (e) => {
     play = !play;
     console.log(play, ' play', typeof play);
     if (play) {
-        playBoard();
-        let time_between = (60/tempo)*time_signature*1000;
-        play_interval = setInterval(playBoard,time_between+90);
+        console.log('Worker start playing!');
+        bar_iterator = 0;
+        next_bar_time = context.currentTime;
+        timeManager.postMessage('start');
     }
     else {
-        console.log('hi from stopping interval!');
-        clearInterval(play_interval);
+        timeManager.postMessage('stop');
     }
 });
 
@@ -84,42 +86,75 @@ play_button.addEventListener('click', (e) => {
 
 // -- functions --
 
+
 function playBoard() {
     // for each step play the sound-strings in sync
-    let delay = 0;
-    const space = calculateSoundDelay();
-    for (let step of Object.values(currSample)) {
-        if (step.some(item => { return item != 0; })) {
-            console.log('nonempty', step);
-            playStep(step,delay);
-        }
-        delay += space;
+
+}
+
+
+function updateQueue(){
+    //this function runs even if play button is not pressed to schedule ahead
+    //periodically adds the currSample steps to be played next
+    //(timeManager worker manages this function)
+    //ahead of time so that the sound delay is reduced.
+    //the loop plays while there are bars to be added in the queue
+    while(next_bar_time < context.currentTime+0.2){
+        addInQueue(bar_iterator,next_bar_time);
+        next_bar_time+=calculateSoundDelay(); //the next-sound will play after some time defined by
+        //the tempo the number of bars the time_signature etc. so it gets added.
     }
+}
+
+
+function addInQueue(bar_iterator,next_bar_time){
+    //adds an object to the queue that consists of the array of audio buffers in
+    //currSample dictionary + a time that works as the delay in which the sound
+    //should be played when the start button is clicked.
+    sample_queue.push({sample:currSample[bar_iterator],time:next_bar_time});//pushes a whole step that needs to be played
+    console.log({sample:currSample[bar_iterator],time:next_bar_time},'hi sample');
+
+    if(sample_queue.length>0)
+    {
+        let next_sample = sample_queue.shift();
+        playStep(next_sample['sample'],next_sample['time']);
+        console.log('removing from sample');
+    }
+    else{console.log('sample queue is empty');}
 
 }
 
 
 
 
-function updateCurrentSample(sound_row, time, add) {
+
+
+function updateCurrentSample(sound_row, curr_step, add) {
     // adds the sound to the time it should be played at
     // with the other sounds it will be played
-    if (add) { currSample[time][sound_row] = kit_1[sound_row]; }
-    else { currSample[time][sound_row] = 0; }
+    if (add) { 
+        currSample[curr_step][sound_row] = kit_1[sound_row]; 
+    }
+    else { 
+        currSample[curr_step][sound_row] = 0; 
+    }
 
     console.log(currSample);
     console.log(kit_1[0], kit_1[1], 'kit_1');
 }
 
 
-function playStep(step,delay) {
+
+
+function playStep(step,start_time) {
     // is passed an array containing samples to be played in sync
     const sounds = step.filter(s=> s!=0);
     for(let s of sounds){
         let bs = context.createBufferSource();
         bs.buffer = s;
         bs.connect(context.destination);
-        bs.start(context.currentTime + delay);
+        bs.start(start_time);
+        
     }
     
 }
@@ -174,11 +209,27 @@ function initialize_curr_selection() {
 
 
 
-console.log(board_tiles[0].length);
-initialize_curr_selection();
-initialize_sounds();
+function main(){
+    
+    initialize_curr_selection();
+    initialize_sounds();
+
+    timeManager = new Worker('timeManager.js');
+    timeManager.onmessage = (e)=>{
+        if(e.data == 'runnin'){
+            //give it the queue to manage
+            console.log('hello there!');
+            updateQueue();
+        }
+        else{
+            console.log('timeManager status ',e.data);
+        }
+    };
+    timeManager.postMessage({"change":check_queue});
+}
 
 
+window.addEventListener('load',main);
 
 
 
