@@ -101,8 +101,7 @@ function updateQueue(){
     //the loop plays while there are bars to be added in the queue
     while(next_bar_time < context.currentTime+0.2){
         addInQueue(bar_iterator,next_bar_time);
-        next_bar_time+=calculateSoundDelay(); //the next-sound will play after some time defined by
-        //the tempo the number of bars the time_signature etc. so it gets added.
+        incrementNextBarTime();
     }
 }
 
@@ -124,8 +123,27 @@ function addInQueue(bar_iterator,next_bar_time){
 
 }
 
+function incrementNextBarTime(){
+    next_bar_time+=calculateSoundDelay(); //the next-sound will play after some time defined by
+    //the tempo the number of bars the time_signature etc. so it gets added.
+    bar_iterator++;
+    if(bar_iterator == max_tiles){
+        bar_iterator = 0;
+    }
+}
 
-
+function playStep(step,start_time) {
+    // is passed an array containing samples to be played in sync
+    const sounds = step.filter(s=> s!=0);
+    for(let s of sounds){
+        let bs = context.createBufferSource();
+        bs.buffer = s;
+        bs.connect(context.destination);
+        bs.start(start_time);
+       bs.stop(start_time+1);
+    }
+    
+}
 
 
 
@@ -146,18 +164,7 @@ function updateCurrentSample(sound_row, curr_step, add) {
 
 
 
-function playStep(step,start_time) {
-    // is passed an array containing samples to be played in sync
-    const sounds = step.filter(s=> s!=0);
-    for(let s of sounds){
-        let bs = context.createBufferSource();
-        bs.buffer = s;
-        bs.connect(context.destination);
-        bs.start(start_time);
-        
-    }
-    
-}
+
 
 
 function playSound(kit_position) {
