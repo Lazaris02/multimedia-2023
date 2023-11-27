@@ -1,4 +1,4 @@
-let check_queue = 100; //how frequently it checks the queue in milliseconds--(default value-might change from main thread)
+let check_queue = 30; //how frequently it checks the queue in milliseconds--(default value-might change from main thread)
 let play_interval;
 
 

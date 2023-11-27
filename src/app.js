@@ -3,21 +3,25 @@
 const board = document.querySelector('#board');
 const tiles = document.querySelectorAll('.tile');
 const sound_rows = document.querySelector('.sound-rows');
+const bar_markers = document.querySelectorAll('.mark-tile');
 const play_button = document.querySelector('#play-button');
 const context = new AudioContext();
 const relative_path = '../assets/audio/';
 let timeManager; // the worker that manages the sound-queue
+let empty = true;
 
 const max_tiles = 16;
 const sound_num = 8;
 const tempo  = 100; // our base tempo
 const time_signature = 4; // beats per bar
-const check_queue = 20; // how frequently the worker should check the queue in millisec
+const check_queue = 30; // how frequently the worker should check the queue in millisecs
 
 
 let bar_iterator = 0; //keeps track of the step that should be played
 let next_bar_time = 0.0; // the time that the next set of sounds will be scheduled to play
 let sample_queue = []; // the ahead-of-time queue the sounds are put in
+let bar_animation_queue = []; // a second queue to animate tha top-bars with correct timing
+
 
 // creates a 8x16 array -->1 row for every sound + 16 tiles 
 // for every sound. if I click on a tile it sets the respective
@@ -64,7 +68,7 @@ sound_rows.addEventListener('click', (e) => {
 });
 
 
-play_button.addEventListener('click', (e) => {
+play_button.addEventListener('click',(e) => {
     // if play button is clicked change its color
     e.target.classList.toggle('func-button-on');
     play = !play;
@@ -74,24 +78,32 @@ play_button.addEventListener('click', (e) => {
         bar_iterator = 0;
         next_bar_time = context.currentTime;
         timeManager.postMessage('start');
+        window.requestAnimationFrame(animateBarTracker);
+
     }
     else {
         timeManager.postMessage('stop');
+        window.cancelAnimationFrame(animateBarTracker);
+        resetBarTracker();
+        bar_tracker = null;
     }
 });
 
 
 
 
-
 // -- functions --
 
+function animateBarTracker(){
+    // the tile-marker right above the currently playing step changes color/performs a 
+    //changes color/performs a short animation
 
-function playBoard() {
-    // for each step play the sound-strings in sync
 
 }
 
+function resetBarTracker(){
+    for(let bar of bar_markers){bar.classList.remove('animate-tile');}
+}
 
 function updateQueue(){
     //this function runs even if play button is not pressed to schedule ahead
@@ -111,12 +123,15 @@ function addInQueue(bar_iterator,next_bar_time){
     //currSample dictionary + a time that works as the delay in which the sound
     //should be played when the start button is clicked.
     sample_queue.push({sample:currSample[bar_iterator],time:next_bar_time});//pushes a whole step that needs to be played
+   
+
     console.log({sample:currSample[bar_iterator],time:next_bar_time},'hi sample');
 
     if(sample_queue.length>0)
     {
         let next_sample = sample_queue.shift();
         playStep(next_sample['sample'],next_sample['time']);
+        window.requestAnimationFrame(animateBarTracker);
         console.log('removing from sample');
     }
     else{console.log('sample queue is empty');}
@@ -140,7 +155,7 @@ function playStep(step,start_time) {
         bs.buffer = s;
         bs.connect(context.destination);
         bs.start(start_time);
-       bs.stop(start_time+1);
+        //might need to also stop the sound after a certain time start_time + sth.
     }
     
 }
@@ -160,11 +175,6 @@ function updateCurrentSample(sound_row, curr_step, add) {
     console.log(currSample);
     console.log(kit_1[0], kit_1[1], 'kit_1');
 }
-
-
-
-
-
 
 
 function playSound(kit_position) {
@@ -225,7 +235,6 @@ function main(){
     timeManager.onmessage = (e)=>{
         if(e.data == 'runnin'){
             //give it the queue to manage
-            console.log('hello there!');
             updateQueue();
         }
         else{
@@ -233,6 +242,7 @@ function main(){
         }
     };
     timeManager.postMessage({"change":check_queue});
+    console.log(sample_queue,'sqsqsq');
 }
 
 
