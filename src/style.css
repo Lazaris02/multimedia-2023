@@ -84,3 +84,24 @@ ul{
     color:var(--text);
 }
 
+
+.bar-marker{
+    /* change this when I team everything in a grid */
+    margin-left: 50px;
+}
+
+.mark-tile{
+    /*  */
+    height: 5px;
+    width: 20px;
+    background-color: var(--background);
+    border-radius: 30%;
+    margin:0 0.2em;
+}
+
+.animate-tile{
+    /* this class is applied to the mark-tile 
+    right when the play-iteration iterates the step */
+    background-color: var(--text);
+}
+
