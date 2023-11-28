@@ -132,7 +132,7 @@ function updateQueue(){
     //ahead of time so that the sound delay is reduced.
     //the loop plays while there are bars to be added in the queue
 
-    while(next_bar_time < context.currentTime+0.2){
+    while(next_bar_time < context.currentTime+0.1){
         addInQueue(bar_iterator,next_bar_time);
         incrementNextBarTime();
     }
@@ -214,7 +214,7 @@ function playSound(kit_position) {
 
 function playGesture(){
     const sound = context.createBufferSource();
-    const gain_node=  context.createGain();
+    const gain_node = context.createGain();
     gain_node.gain.value = 0;
     sound.connect(gain_node);
     gain_node.connect(context.destination);
