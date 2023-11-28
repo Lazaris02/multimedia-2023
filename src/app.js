@@ -1,17 +1,20 @@
 
 //---Get the basic elements of the board
 const board = document.querySelector('#board');
-const tiles = document.querySelectorAll('.tile');
+const tiles = document.querySelectorAll('.tile'); // not used yet
 const sound_rows = document.querySelector('.sound-rows');
 const bar_markers = document.querySelectorAll('.mark-tile');
 const play_button = document.querySelector('#play-button');
-const context = new AudioContext();
-const relative_path = '../assets/audio/';
+const reset_button = document.querySelector('#reset-button');
+
+
 let timeManager; // the worker that manages the sound-queue
 let animationWorker; // the worker that manages the top-bar animation
 
+const context = new AudioContext();
+const relative_path = '../assets/audio/';
 
-const max_tiles = 16;
+const max_tiles = 16; //todo if we add a tile add/reduce then this needs to become a variable not a const 
 const sound_num = 8;
 const tempo  = 100; // our base tempo
 const time_signature = 4; // beats per bar
@@ -23,21 +26,13 @@ let next_bar_time = 0.0; // the time that the next set of sounds will be schedul
 
 
 let sample_queue = []; // the ahead-of-time queue the sounds are put in
-let bar_animation_queue = []; // a second queue to animate tha top-bars with correct timing
-let first =true;
 
-
-
-// creates a 8x16 array -->1 row for every sound + 16 tiles 
-// for every sound. if I click on a tile it sets the respective
-// board_tile position into a 1. If I unclick it goes back to 0
-const board_tiles = Array(sound_num).fill().map(() => new Array(max_tiles).fill(0));
 
 // handles start-stop
 let play = false;
-let play_interval;
+let play_interval; //not used yet
 
-let animation_interval;
+let animation_interval; // not used yet
 let bar_animator = -1; //keeps track of the step that should be animated
 
 
@@ -50,6 +45,7 @@ const kit_1 = []; //will contain the sounds.
 // for example currSample[0] contains all the sounds to be played
 // in the first column of the kit (maximum 8 sounds)
 let currSample = {};
+let onList = []; //keeps track of the on-tiles that need to be reset in some cases.
 
 
 // -- event-listeners --
@@ -63,14 +59,14 @@ sound_rows.addEventListener('click', (e) => {
         const parent = e.target.parentElement;
         const sound_row = +parent.dataset.row;
         const curr_step = +e.target.dataset.tile;
-        board_tiles[sound_row][curr_step] = +!board_tiles[sound_row][curr_step];
-        if(first){first = false;}
         if (e.target.className == 'tile tile-on') {
             playSound(sound_row);
             updateCurrentSample(sound_row, curr_step, true);
+            onList.push(e.target);
         }
         else {
             updateCurrentSample(sound_row,curr_step, false);
+            onList.remove(onList.indexOf(e.target));
         }
 
     }
@@ -101,6 +97,10 @@ play_button.addEventListener('click',(e) => {
     }
 });
 
+reset_button.addEventListener('click',(e)=>{
+    //if reset button is clicked reset the board
+    resetSample();
+});
 
 
 
@@ -108,7 +108,6 @@ play_button.addEventListener('click',(e) => {
 
 
 function bar_animation(){
-    if(first){return;}
     bar_animator++;
     if(bar_animator == 16){
         bar_animator = 0;
@@ -117,12 +116,12 @@ function bar_animation(){
     let prev_tile = curr_tile == 0 ? 15 : curr_tile-1;
     bar_markers[curr_tile].classList.add('animate-tile');
     bar_markers[prev_tile].classList.remove('animate-tile');
-    console.log('in execute_animation');
 }
 
 
 
 function resetBarTracker(){
+    //used when the play button is off to reset the color of the tiles
     for(let bar of bar_markers){bar.classList.remove('animate-tile');}
 }
 
@@ -144,9 +143,8 @@ function addInQueue(bar_iterator,next_bar_time){
     //adds an object to the queue that consists of the array of audio buffers in
     //currSample dictionary + a time that works as the delay in which the sound
     //should be played when the start button is clicked.
-    sample_queue.push({sample:currSample[bar_iterator],time:next_bar_time});//pushes a whole step that needs to be played
-   
 
+    sample_queue.push({sample:currSample[bar_iterator],time:next_bar_time});//pushes a whole step that needs to be played
 
     if(sample_queue.length>0)
     {
@@ -186,7 +184,7 @@ function updateCurrentSample(sound_row, curr_step, add) {
     // adds the sound to the time it should be played at
     // with the other sounds it will be played
     if (add) { 
-        currSample[curr_step][sound_row] = kit_1[sound_row]; 
+        currSample[curr_step][sound_row] = kit_1[sound_row];
     }
     else { 
         currSample[curr_step][sound_row] = 0; 
@@ -194,6 +192,15 @@ function updateCurrentSample(sound_row, curr_step, add) {
 
     console.log(currSample);
     console.log(kit_1[0], kit_1[1], 'kit_1');
+}
+
+function resetSample(){
+    for(let tile of onList){
+        tile.classList.remove('tile-on');
+    }
+    for(let key of Object.keys(currSample)){
+        currSample[key] = Array(sound_num).fill(0);
+    }
 }
 
 
@@ -266,7 +273,7 @@ function main(){
 
     timeManager.onmessage = (e)=>{
         if(e.data == 'runnin'){
-            //time manager manipulates the queue
+            //call the updateQueue each time worker responds with runnin
             updateQueue();
         }
         else{
@@ -277,7 +284,7 @@ function main(){
 
     animationWorker.onmessage  = (e)=>{
         if(e.data == 'animate'){
-            //call the animation function
+            //call the animation function if worker responds with animate
             requestAnimationFrame(bar_animation);
         }
         else{

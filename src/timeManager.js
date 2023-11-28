@@ -20,7 +20,6 @@ self.onmessage = (e) => {
         check_queue = e.data[1];
         //if I want to change how frequently we check the queue 
         // we need to reset the current interval and reset it with the correct check_queue time.
-        console.log('I am in');
         if (play_interval) {
             clearInterval(play_interval);
             play_interval = setInterval(() => { postMessage('running') }, check_queue); 
