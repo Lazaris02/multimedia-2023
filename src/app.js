@@ -66,7 +66,7 @@ sound_rows.addEventListener('click', (e) => {
         }
         else {
             updateCurrentSample(sound_row,curr_step, false);
-            onList.remove(onList.indexOf(e.target));
+            onList.splice(onList.indexOf(e.target),1);
         }
 
     }
@@ -79,7 +79,6 @@ play_button.addEventListener('click',(e) => {
     play = !play;
     console.log(play, ' play', typeof play);
     if (play) {
-        playGesture(); //plays a mute sound for the context-audio to activate
         console.log('Worker start playing!');
         bar_iterator = 0;
         bar_animator = -1;
@@ -143,7 +142,7 @@ function addInQueue(bar_iterator,next_bar_time){
     //adds an object to the queue that consists of the array of audio buffers in
     //currSample dictionary + a time that works as the delay in which the sound
     //should be played when the start button is clicked.
-
+    
     sample_queue.push({sample:currSample[bar_iterator],time:next_bar_time});//pushes a whole step that needs to be played
 
     if(sample_queue.length>0)
@@ -212,14 +211,6 @@ function playSound(kit_position) {
     sound.start(context.currentTime);
 }
 
-function playGesture(){
-    const sound = context.createBufferSource();
-    const gain_node = context.createGain();
-    gain_node.gain.value = 0;
-    sound.connect(gain_node);
-    gain_node.connect(context.destination);
-    sound.start(context.currentTime);
-}
 
 
 function calculateSoundDelay(){
