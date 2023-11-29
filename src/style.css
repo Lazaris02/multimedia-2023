@@ -105,3 +105,13 @@ ul{
     background-color: var(--text);
 }
 
+
+.setup-button{
+    /* distinct look for the setup-button */
+    color: rgb(17, 136, 27);
+    background-color:var(--accent);
+    padding: 0.5rem;
+    font-weight: 600;
+    border:1px solid var(--secondary);
+    border-radius:20px;
+}

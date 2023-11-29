@@ -6,12 +6,12 @@ const sound_rows = document.querySelector('.sound-rows');
 const bar_markers = document.querySelectorAll('.mark-tile');
 const play_button = document.querySelector('#play-button');
 const reset_button = document.querySelector('#reset-button');
-
+const setup_context = document.querySelector('#setup-context');
+let context;
 
 let timeManager; // the worker that manages the sound-queue
 let animationWorker; // the worker that manages the top-bar animation
 
-const context = new AudioContext();
 const relative_path = '../assets/audio/';
 
 const max_tiles = 16; //todo if we add a tile add/reduce then this needs to become a variable not a const 
@@ -48,8 +48,27 @@ let currSample = {};
 let onList = []; //keeps track of the on-tiles that need to be reset in some cases.
 
 
-// -- event-listeners --
-sound_rows.addEventListener('click', (e) => {
+// -- event-listeners + their functions --
+
+
+
+setup_context.addEventListener('click',(e)=>{
+    //the gesture needed for the app to properly setup
+    if(context === undefined){
+        context = new AudioContext();
+    }
+    main();
+   setup_context.remove();
+})
+
+
+function setupOnClickListeners(){
+    sound_rows.addEventListener('click',clickTile);
+    play_button.addEventListener('click',playBoard);
+    reset_button.addEventListener('click',resetSample);
+}
+
+function clickTile(e){
     // if a tile is clicked :
     // 1. it changes color 2. I toggle its status on the board matrix
     // 3. I need to add the respective sound + position in the sample
@@ -70,10 +89,11 @@ sound_rows.addEventListener('click', (e) => {
         }
 
     }
-});
+}
 
 
-play_button.addEventListener('click',(e) => {
+
+function playBoard(e){
     // if play button is clicked change its color
     e.target.classList.toggle('func-button-on');
     play = !play;
@@ -94,16 +114,10 @@ play_button.addEventListener('click',(e) => {
         resetBarTracker();
         bar_tracker = null;
     }
-});
-
-reset_button.addEventListener('click',(e)=>{
-    //if reset button is clicked reset the board
-    resetSample();
-});
+}
 
 
-
-// -- functions --
+// -- other functions --
 
 
 function bar_animation(){
@@ -241,8 +255,6 @@ async function initialize_sounds(path_array) {
 
 
 
-
-
 function initialize_curr_selection() {
     // initializes the 
     for (let i = 0; i < max_tiles; i++) {
@@ -252,12 +264,11 @@ function initialize_curr_selection() {
 }
 
 
-
 function main(){
     
     initialize_curr_selection();
     initialize_sounds();
-
+    setupOnClickListeners();
     timeManager = new Worker('timeManager.js');
     animationWorker = new Worker('barAnimationManager.js');
     
@@ -285,8 +296,6 @@ function main(){
     animationWorker.postMessage(["change",calculateSoundDelay()]);
 }
 
-
-window.addEventListener('load',main);
 
 
 
