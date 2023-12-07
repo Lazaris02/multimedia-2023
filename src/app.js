@@ -22,9 +22,14 @@ let timeManager; // the worker that manages the sound-queue
 let animationWorker; // the worker that manages the top-bar animation
 
 const relative_path = '../assets/audio/';
+const kit_type = ['trap/','techno/','future/','boombap/'];
+let current_kit = kit_type[1];  // keeps track of which kit we are on so that the correct sound is played
+const fileNames = ['kick.wav', 'snare.wav','clap.wav', 'tomb.wav','openhat.wav', 'hat.wav'];
+const kit_collection = {}; //will contain the sounds.
+
 
 const max_tiles = 16; //todo if we add a tile add/reduce then this needs to become a variable not a const 
-const sound_num = 8;
+const sound_num = 6;
 let tempo  = 100; // our base tempo
 const time_signature = 4; // beats per bar
 const check_queue = 30; // how frequently the worker should check the queue in millisecs
@@ -53,8 +58,7 @@ let bar_animator = 0; //keeps track of the step that should be animated
 
 
 // -- sound collections --
-const fileNames = ['kick_1.wav', 'snare_1.wav','kick_1.wav', 'snare_1.wav','kick_1.wav', 'snare_1.wav','kick_1.wav', 'snare_1.wav'];
-const kit_1 = []; //will contain the sounds.
+
 
 // it is an object with 16 keys - 1 for each time
 // we add the sounds to be played in the respective key
@@ -281,7 +285,7 @@ function updateCurrentSample(sound_row, curr_step, add) {
     // adds the sound to the time it should be played at
     // with the other sounds it will be played
     if (add) { 
-        currSample[curr_step][sound_row] = kit_1[sound_row];
+        currSample[curr_step][sound_row] = kit_collection[current_kit][sound_row];
     }
     else { 
         currSample[curr_step][sound_row] = 0; 
@@ -301,7 +305,7 @@ function resetSample(){
 function playSound(kit_position) {
     // play the sound that corresponds to a specific row.
     const sound = context.createBufferSource();
-    sound.buffer = kit_1[kit_position];
+    sound.buffer = kit_collection[current_kit][kit_position];
     convolver=context.createConvolver();
     convolver.buffer=sound.buffer;
     sound.connect(convolver);
@@ -353,17 +357,15 @@ async function getSound(path) {
 
 async function initialize_sounds(path_array) {
     // preloads all the sounds we will need in the kits array
-    for (let name of fileNames) {
-        console.log(`pushing ${relative_path}${name}`);
-        const sound = await getSound(relative_path + name);
-        kit_1.push(sound);
+    for (let type of  kit_type){
+        for (let name of fileNames) {
+            console.log(`pushing ${relative_path}${type}${name}`);
+            const sound = await getSound(relative_path + type + name);
+            kit_collection[type].push(sound);
+        }
     }
     console.log('sounds ready');
 }
-
-
-
-
 
 
 function initialize_curr_selection() {
@@ -372,6 +374,13 @@ function initialize_curr_selection() {
         currSample[i] = Array(8).fill(0);
     }
     console.log(currSample);
+}
+
+function initializeKitCollection(){
+    //initializes the object that contains all the kits-> kit_name : [....array with respective sounds....]
+    for(let kit of kit_type){
+        kit_collection[kit] = [];
+    }
 }
 
 async function initialize_range(){
@@ -389,8 +398,8 @@ async function initialize_range(){
 }
 
 function main(){
-    
     initialize_curr_selection();
+    initializeKitCollection();
     initialize_sounds();
     setupOnClickListeners();
     initialize_range();
