@@ -7,7 +7,14 @@ const bar_markers = document.querySelectorAll('.mark-tile');
 const play_button = document.querySelector('#play-button');
 const reset_button = document.querySelector('#reset-button');
 const setup_context = document.querySelector('#setup-context');
+
 const effect_control=document.querySelector('#effect_drop');
+
+
+const bpm_area = document.querySelector('#bpm-area');
+const bpm_text = document.querySelector('#bpm-text');
+const bpm_range = document.querySelector('#bpm-range');
+
 
 let context;
 
@@ -18,7 +25,7 @@ const relative_path = '../assets/audio/';
 
 const max_tiles = 16; //todo if we add a tile add/reduce then this needs to become a variable not a const 
 const sound_num = 8;
-const tempo  = 100; // our base tempo
+let tempo  = 100; // our base tempo
 const time_signature = 4; // beats per bar
 const check_queue = 30; // how frequently the worker should check the queue in millisecs
 
@@ -41,7 +48,7 @@ let play = false;
 let play_interval; //not used yet
 
 let animation_interval; // not used yet
-let bar_animator = -1; //keeps track of the step that should be animated
+let bar_animator = 0; //keeps track of the step that should be animated
 
 
 
@@ -56,6 +63,11 @@ const kit_1 = []; //will contain the sounds.
 let currSample = {};
 let onList = []; //keeps track of the on-tiles that need to be reset in some cases.
 
+
+
+const bpm_step = 5;
+const temp_max = parseInt(bpm_text.max);
+const temp_min = parseInt(bpm_text.min);
 
 // -- event-listeners + their functions --
 
@@ -76,6 +88,7 @@ function setupOnClickListeners(){
     sound_rows.addEventListener('click',clickTile);
     play_button.addEventListener('click',playBoard);
     reset_button.addEventListener('click',resetSample);
+
     effect_control.addEventListener('change',changeEff,false);
     let gainers=document.querySelectorAll('[class*="gainer"]');
     for(g of gainers){
@@ -84,6 +97,11 @@ function setupOnClickListeners(){
     }
     //reverbControl1.addEventListener('input',changeReverb,false);
     
+
+    bpm_area.addEventListener('change',(e)=>{
+        if(e.target.tagName.toLowerCase() == 'input'){bpmEdit(e.target);}
+    });
+
 }
 
 function clickTile(e){
@@ -178,6 +196,7 @@ function bar_animation(){
     if(bar_animator == 16){
         bar_animator = 0;
     }
+
     let curr_tile = bar_animator;
     let prev_tile = curr_tile == 0 ? 15 : curr_tile-1;
     bar_markers[curr_tile].classList.add('animate-tile');
@@ -215,7 +234,7 @@ function addInQueue(bar_iterator,next_bar_time){
     if(sample_queue.length>0)
     {
         let next_sample = sample_queue.shift();
-        playStep(next_sample['sample'],next_sample['time']);
+        if(play){playStep(next_sample['sample'],next_sample['time']);}
         console.log('removing from sample');
     }
     else{console.log('sample queue is empty');}
@@ -267,9 +286,6 @@ function updateCurrentSample(sound_row, curr_step, add) {
     else { 
         currSample[curr_step][sound_row] = 0; 
     }
-
-    console.log(currSample);
-    console.log(kit_1[0], kit_1[1], 'kit_1');
 }
 
 function resetSample(){
@@ -294,6 +310,28 @@ function playSound(kit_position) {
     sound.connect(volumeNode[kit_position])
     volumeNode[kit_position].connect(context.destination); 
     sound.start(context.currentTime);
+}
+
+
+function bpmEdit(input_clicked){
+    //when someone  changes bpm
+    let curr_temp = parseInt(input_clicked.value);
+
+    if(curr_temp<=temp_max && curr_temp>=temp_min){
+       tempo = curr_temp;
+    }else if(curr_temp>temp_max){
+        tempo = temp_max;
+    }
+    else if(curr_temp<temp_min){
+        tempo = temp_min;;
+    }
+    
+
+    bpm_text.value = tempo;
+    bpm_range.value = tempo;
+
+    animationWorker.postMessage(["change",calculateSoundDelay()]);
+
 }
 
 
