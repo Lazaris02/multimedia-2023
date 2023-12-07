@@ -21,11 +21,18 @@
             <button id="play-button" class="func-button">Play</button>
             <button id="reset-button" class="func-button">Reset</button>
             <button id="setup-context" class="setup-button">Setup</button>
+
+            <select name="effect_drop" id="effect_drop">
+                <option value="volume">volume</option>
+                <option value="reverb">reverb</option>
+            </select>
+
             <div id="bpm-area">
                 <input type="range" id="bpm-range" value="100" min="50" max="200" step="1"> 
                 <input type="number" id="bpm-text" value="100" min="50" max="200" step="5">
                 <label for="bpm-text">BPM</label>
             </div>
+
             <div class="row">
                 <div class="bar-marker">
                     <button data-bar="false" class="mark-tile"></button>
@@ -44,6 +51,7 @@
                     <button data-bar="false" class="mark-tile"></button>
                     <button data-bar="false" class="mark-tile"></button>
                     <button data-bar="false" class="mark-tile"></button>
+                    
                 </div>
             </div>
             <div class="row">
@@ -69,8 +77,8 @@
                     <button data-tile="14" class="tile"></button>
                     <button data-tile="15" class="tile"></button>
                 </li>
-                <label for="range-1">Volume</label>
-                <input type="range" id="range-1" min="0" max="1" step="0.01">
+                <label for="range-1" id="gainerlab">Volume</label>
+                <input class="volumegainer1" type="range" id="range-1" min="0" max="1" step="0.01">
             </div>
 
             <div class="row">
@@ -96,8 +104,8 @@
                     <button data-tile="14" class="tile"></button>
                     <button data-tile="15" class="tile"></button>
                 </li>
-                <label for="range-2">Volume</label>
-                <input type="range" id="range-2" min="0" max="1" step="0.01">
+                <label for="range-2" id="gainerlab">Volume</label>
+                <input class="volumegainer2" type="range" id="range-2" min="0" max="1" step="0.01">
             </div>
             <div class="row">
                 <span class="sound-name">Snare</span>
@@ -122,8 +130,8 @@
                     <button data-tile="14" class="tile"></button>
                     <button data-tile="15" class="tile"></button>
                 </li>
-                <label for="range-2">Volume</label>
-                <input type="range" id="range-2" min="0" max="1" step="0.01">
+                <label for="range-3" id="gainerlab">Volume</label>
+                <input class="volumegainer3" type="range" id="range-3" min="0" max="1" step="0.01">
             </div>
 
             <div class="row">
@@ -149,8 +157,8 @@
                     <button data-tile="14" class="tile"></button>
                     <button data-tile="15" class="tile"></button>
                 </li>
-                <label for="range-3">Volume</label>
-                <input type="range" id="range-3" min="0" max="1" step="0.01">
+                <label for="range-4" id="gainerlab">Volume</label>
+                <input class="volumegainer4" type="range" id="range-4" min="0" max="1" step="0.01">
             </div>
             <div class="row">
                 <span class="sound-name">Snare</span>
@@ -175,8 +183,8 @@
                     <button data-tile="14" class="tile"></button>
                     <button data-tile="15" class="tile"></button>
                 </li>
-                <label for="range-4">Volume</label>
-                <input type="range" id="range-4" min="0" max="1" step="0.01">
+                <label for="range-5" id="gainerlab">Volume</label>
+                <input class="volumegainer5" type="range" id="range-5" min="0" max="1" step="0.01">
             </div>
 
             <div class="row">
@@ -202,8 +210,8 @@
                     <button data-tile="14" class="tile"></button>
                     <button data-tile="15" class="tile"></button>
                 </li>
-                <label for="range-5">Volume</label>
-                <input type="range" id="range-5" min="0" max="1" step="0.01">
+                <label for="range-6" id="gainerlab">Volume</label>
+                <input class="volumegainer6" type="range" id="range-6" min="0" max="1" step="0.01">
             </div>
             <div class="row">
                 <span class="sound-name">Snare</span>
@@ -228,8 +236,8 @@
                     <button data-tile="14" class="tile"></button>
                     <button data-tile="15" class="tile"></button>
                 </li>
-                <label for="range-6">Volume</label>
-                <input type="range" id="range-6" min="0" max="1" step="0.01">
+                <label for="range-7" id="gainerlab">Volume</label>
+                <input class="volumegainer6" type="range" id="range-7" min="0" max="1" step="0.01">
             </div>
 
             <div class="row">
@@ -255,8 +263,8 @@
                     <button data-tile="14" class="tile"></button>
                     <button data-tile="15" class="tile"></button>
                 </li>
-                <label for="range-7">Volume</label>
-                <input type="range" id="range-7" min="0" max="1" step="0.01">
+                <label for="range-8" id="gainerlab">Volume</label>
+                <input class="volumegainer8" type="range" id="range-8" min="0" max="1" step="0.01">
             </div>
         </div>
     </ul>

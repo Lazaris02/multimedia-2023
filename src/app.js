@@ -8,9 +8,13 @@ const play_button = document.querySelector('#play-button');
 const reset_button = document.querySelector('#reset-button');
 const setup_context = document.querySelector('#setup-context');
 
+const effect_control=document.querySelector('#effect_drop');
+
+
 const bpm_area = document.querySelector('#bpm-area');
 const bpm_text = document.querySelector('#bpm-text');
 const bpm_range = document.querySelector('#bpm-range');
+
 
 let context;
 
@@ -32,6 +36,12 @@ let next_bar_time = 0.0; // the time that the next set of sounds will be schedul
 
 let sample_queue = []; // the ahead-of-time queue the sounds are put in
 
+let control=[];//for sliders
+const volumeNode=[];//for maingainnode
+const reverbNode=[];//for reverbgainNode
+
+
+let reverbch=false;//for knowing when user chooses to change the reverb
 
 // handles start-stop
 let play = false;
@@ -39,6 +49,7 @@ let play_interval; //not used yet
 
 let animation_interval; // not used yet
 let bar_animator = 0; //keeps track of the step that should be animated
+
 
 
 // -- sound collections --
@@ -64,11 +75,12 @@ const temp_min = parseInt(bpm_text.min);
 
 setup_context.addEventListener('click',(e)=>{
     //the gesture needed for the app to properly setup
+    
     if(context === undefined){
         context = new AudioContext();
     }
     main();
-   setup_context.remove();
+    setup_context.remove();
 })
 
 
@@ -76,9 +88,20 @@ function setupOnClickListeners(){
     sound_rows.addEventListener('click',clickTile);
     play_button.addEventListener('click',playBoard);
     reset_button.addEventListener('click',resetSample);
+
+    effect_control.addEventListener('change',changeEff,false);
+    let gainers=document.querySelectorAll('[class*="gainer"]');
+    for(g of gainers){
+        control.push(g.value)
+        g.addEventListener('input',changeGain,false);
+    }
+    //reverbControl1.addEventListener('input',changeReverb,false);
+    
+
     bpm_area.addEventListener('change',(e)=>{
         if(e.target.tagName.toLowerCase() == 'input'){bpmEdit(e.target);}
     });
+
 }
 
 function clickTile(e){
@@ -129,6 +152,41 @@ function playBoard(e){
     }
 }
 
+function changeGain(e) {
+    if(e.target.className.startsWith('volume')) {
+        control[parseInt(e.target.id.slice(-1))-1]=e.target.value;
+        volumeNode[parseInt(e.target.id.slice(-1))-1].gain.value=control[parseInt(e.target.id.slice(-1))-1];
+    }
+    if(e.target.className.startsWith('reverb')) {
+        control[parseInt(e.target.id.slice(-1))-1]=e.target.value;
+        reverbNode[parseInt(e.target.id.slice(-1))-1].gain.value=control[parseInt(e.target.id.slice(-1))-1];
+    }
+}
+function changeReverb(e){
+    reverbNode[parseInt(e.target.id.slice(-1))-1].gain.value=reverbControl[parseInt(e.target.id.slice(-1))-1].value;
+}
+function changeEff(){
+    let gainerslabels=document.querySelectorAll('#gainerlab')
+    for(let g of gainerslabels){
+        g.innerHTML=effect_control.value;
+    }
+    let gainers=document.querySelectorAll('[class*="gainer"]');
+    for(let g of gainers){
+        g.className=effect_control.value+"gainer"+g.id.slice(-1);
+    }
+    if(gainers[0].className.startsWith('volume')){
+        for(let g of gainers){
+            g.value=volumeNode[parseInt(g.id.slice(-1))-1].gain.value;
+            control[parseInt(g.id.slice(-1))-1]=g.value;
+        }
+    }
+    if(gainers[0].className.startsWith('reverb')){//reverb changing for the first time
+        for(let g of gainers){
+            g.value=reverbNode[parseInt(g.id.slice(-1))-1].gain.value;
+            control[parseInt(g.id.slice(-1))-1]=g.value;
+         }
+    }
+}
 
 // -- other functions --
 
@@ -194,13 +252,25 @@ function incrementNextBarTime(){
 
 function playStep(step,start_time) {
     // is passed an array containing samples to be played in sync
-    const sounds = step.filter(s=> s!=0);
-    for(let s of sounds){
+    console.log(step)
+    const index=step.map((item, i) => ({ item, i }))
+    .filter(s=> s.item!=0);
+    
+    console.log(index)
+    for(let s of index){
+        console.log(index["index"])
         let bs = context.createBufferSource();
-        bs.buffer = s;
-        bs.connect(context.destination);
+        bs.buffer = s.item;
+        convolver=context.createConvolver();
+        convolver.buffer=bs.buffer;
+        bs.connect(convolver);
+        convolver.connect(reverbNode[s.i])
+        bs.connect(volumeNode[s.i]);
+        bs.connect(convolver);
+        reverbNode[s.i].connect(context.destination);
+        volumeNode[s.i].connect(context.destination);
         bs.start(start_time);
-        //might need to also stop the sound after a certain time start_time + sth.
+        
     }
     
 }
@@ -232,7 +302,13 @@ function playSound(kit_position) {
     // play the sound that corresponds to a specific row.
     const sound = context.createBufferSource();
     sound.buffer = kit_1[kit_position];
-    sound.connect(context.destination);
+    convolver=context.createConvolver();
+    convolver.buffer=sound.buffer;
+    sound.connect(convolver);
+    convolver.connect(reverbNode[kit_position]);
+    reverbNode[kit_position].connect(context.destination)
+    sound.connect(volumeNode[kit_position])
+    volumeNode[kit_position].connect(context.destination); 
     sound.start(context.currentTime);
 }
 
@@ -288,6 +364,8 @@ async function initialize_sounds(path_array) {
 
 
 
+
+
 function initialize_curr_selection() {
     // initializes the 
     for (let i = 0; i < max_tiles; i++) {
@@ -296,20 +374,32 @@ function initialize_curr_selection() {
     console.log(currSample);
 }
 
+async function initialize_range(){
+    let gainers=document.querySelectorAll('[class*="volumegainer"]');
+    for(let g of gainers){
+        control.push(g.value);//push slider to volume control
+        gainNode=context.createGain();
+        gainNode.gain.value=control[parseInt(g.id.slice(-1))-1]; 
+        volumeNode.push(gainNode);//push the gain node
+        gainNode=context.createGain();
+        gainNode.gain.value=0;
+        reverbNode.push(gainNode);//push the reverb node
+    }
+    
+}
 
 function main(){
     
     initialize_curr_selection();
     initialize_sounds();
     setupOnClickListeners();
+    initialize_range();
     timeManager = new Worker('timeManager.js');
     animationWorker = new Worker('barAnimationManager.js');
-    
-
     timeManager.onmessage = (e)=>{
         if(e.data == 'runnin'){
             //call the updateQueue each time worker responds with runnin
-            updateQueue();
+            updateQueue();      
         }
         else{
             console.log('timeManager status ',e.data);
