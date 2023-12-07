@@ -22,8 +22,9 @@ self.onmessage = (e) => {
         // we need to reset the current interval and reset it with the correct check_queue time.
         if (play_interval) {
             clearInterval(play_interval);
-            play_interval = setInterval(() => { postMessage('runnin') }, check_queue); 
-        }                                                                         
+        }                                
+        play_interval = setInterval(() => { postMessage('runnin') }, check_queue); 
+        
     }
 }
 

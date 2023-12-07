@@ -115,3 +115,31 @@ ul{
     border:1px solid var(--secondary);
     border-radius:20px;
 }
+
+#bpm-area{
+    /* container for the + - bpm buttons */
+    display: flex;
+    gap: 10px;
+}
+
+.small-button{
+    /* styling for the + - bpm buttons */
+    width: 20px;
+
+}
+
+#bpm-area>*{
+    color: var(--text);
+}
+
+#bpm-area>input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    /* hides the number arrows in the bpm thing*/
+  -webkit-appearance: none;
+
+}
+
+#bpm-area>input{
+    text-align: center;
+    color:var(--background);
+}
