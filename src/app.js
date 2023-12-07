@@ -23,7 +23,7 @@ let animationWorker; // the worker that manages the top-bar animation
 
 const relative_path = '../assets/audio/';
 const kit_type = ['trap/','techno/','future/','boombap/'];
-let current_kit = kit_type[1];  // keeps track of which kit we are on so that the correct sound is played
+let current_kit = kit_type[0];  // keeps track of which kit we are on so that the correct sound is played
 const fileNames = ['kick.wav', 'snare.wav','clap.wav', 'tomb.wav','openhat.wav', 'hat.wav'];
 const kit_collection = {}; //will contain the sounds.
 
