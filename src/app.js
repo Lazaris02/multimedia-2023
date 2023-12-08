@@ -37,11 +37,15 @@ let next_bar_time = 0.0; // the time that the next set of sounds will be schedul
 let sample_queue = []; // the ahead-of-time queue the sounds are put in
 
 let control=[];//for sliders
-const volumeNode=[];//for maingainnode
-const reverbNode=[];//for reverbgainNode
 
+const volumeNode=[];//for maingainnodes
+const reverbNode=[];//for reverbgainNodes
+const panNode=[];//for pangainNodes
+const delayNode=[];//for delayNodes
+const delay=[];//for actual delay (to change the delayTime)
+let pitch=[];//for assinging values to pitch
+let delayTime=[]//for assigning values to delay time
 
-let reverbch=false;//for knowing when user chooses to change the reverb
 
 // handles start-stop
 let play = false;
@@ -95,7 +99,6 @@ function setupOnClickListeners(){
         control.push(g.value)
         g.addEventListener('input',changeGain,false);
     }
-    //reverbControl1.addEventListener('input',changeReverb,false);
     
 
     bpm_area.addEventListener('change',(e)=>{
@@ -152,20 +155,37 @@ function playBoard(e){
     }
 }
 
-function changeGain(e) {
-    if(e.target.className.startsWith('volume')) {
+function changeGain(e) {//function for changing control value on user input
+    //control value is for all effects, so we change the effect depending on the class that the slider is
+    //we get set the control current value from the user input and then set the node value from the control array 
+    if(e.target.className.startsWith('volume')) {//the sliders are for volume control
         control[parseInt(e.target.id.slice(-1))-1]=e.target.value;
         volumeNode[parseInt(e.target.id.slice(-1))-1].gain.value=control[parseInt(e.target.id.slice(-1))-1];
     }
-    if(e.target.className.startsWith('reverb')) {
+    if(e.target.className.startsWith('reverb')) {//the sliders are for reverb control
         control[parseInt(e.target.id.slice(-1))-1]=e.target.value;
         reverbNode[parseInt(e.target.id.slice(-1))-1].gain.value=control[parseInt(e.target.id.slice(-1))-1];
     }
+    if(e.target.className.startsWith('pan')) {//the sliders are for pan control
+        control[parseInt(e.target.id.slice(-1))-1]=e.target.value;
+        panNode[parseInt(e.target.id.slice(-1))-1].pan.value=control[parseInt(e.target.id.slice(-1))-1];
+    }
+    if(e.target.className.startsWith('pitch')) {//the sliders are for pitch control
+        control[parseInt(e.target.id.slice(-1))-1]=e.target.value;
+        pitch[parseInt(e.target.id.slice(-1))-1]=control[parseInt(e.target.id.slice(-1))-1];
+    }
+    if(e.target.className.startsWith('delay')) {//the sliders are for pitch control
+        control[parseInt(e.target.id.slice(-1))-1]=e.target.value;
+        delayNode[parseInt(e.target.id.slice(-1))-1].gain.value=control[parseInt(e.target.id.slice(-1))-1];
+    }
+    if(e.target.className.startsWith('time')) {//the sliders are for pitch control
+        control[parseInt(e.target.id.slice(-1))-1]=e.target.value;
+        delay[parseInt(e.target.id.slice(-1))-1].delayTime.value=control[parseInt(e.target.id.slice(-1))-1];
+    }
 }
-function changeReverb(e){
-    reverbNode[parseInt(e.target.id.slice(-1))-1].gain.value=reverbControl[parseInt(e.target.id.slice(-1))-1].value;
-}
-function changeEff(){
+function changeEff(){//function for changing the effect depending on the user input
+    //we must identify the effect the user chose, change the inner html value for UI, add min max value on slider depending on effect
+    //,set the value of the slider from the effect array so user does not lose his choices and finaly update the control array
     let gainerslabels=document.querySelectorAll('#gainerlab')
     for(let g of gainerslabels){
         g.innerHTML=effect_control.value;
@@ -176,13 +196,55 @@ function changeEff(){
     }
     if(gainers[0].className.startsWith('volume')){
         for(let g of gainers){
+            g.min=0;
+            g.max=0.8;
+            g.step=0.01;
             g.value=volumeNode[parseInt(g.id.slice(-1))-1].gain.value;
             control[parseInt(g.id.slice(-1))-1]=g.value;
         }
     }
-    if(gainers[0].className.startsWith('reverb')){//reverb changing for the first time
+    if(gainers[0].className.startsWith('reverb')){
         for(let g of gainers){
+            g.min=0;
+            g.max=1;
+            g.step=0.01;
             g.value=reverbNode[parseInt(g.id.slice(-1))-1].gain.value;
+            control[parseInt(g.id.slice(-1))-1]=g.value;
+         }
+    }
+    if(gainers[0].className.startsWith('pan')){
+        for(let g of gainers){
+            g.min=-1;
+            g.max=1;
+            g.step=0.01;
+            g.value=panNode[parseInt(g.id.slice(-1))-1].pan.value;
+            control[parseInt(g.id.slice(-1))-1]=g.value;
+         }
+    }
+    if(gainers[0].className.startsWith('pitch')){
+        for(let g of gainers){
+            g.min=0.3;
+            g.max=1.7;
+            g.step=0.01;
+            g.value=pitch[parseInt(g.id.slice(-1))-1];
+            control[parseInt(g.id.slice(-1))-1]=g.value;
+         }
+    }
+    if(gainers[0].className.startsWith('delay')){
+        for(let g of gainers){
+            g.min=0;
+            g.max=0.8;
+            g.step=0.01;
+            g.value=delayNode[parseInt(g.id.slice(-1))-1].gain.value;
+            control[parseInt(g.id.slice(-1))-1]=g.value;
+         }
+    }
+    if(gainers[0].className.startsWith('time')){
+        for(let g of gainers){
+            g.min=0;
+            g.max=1;
+            g.step=0.01;
+            g.value=delay[parseInt(g.id.slice(-1))-1].delayTime.value;
             control[parseInt(g.id.slice(-1))-1]=g.value;
          }
     }
@@ -256,23 +318,25 @@ function playStep(step,start_time) {
     const index=step.map((item, i) => ({ item, i }))
     .filter(s=> s.item!=0);
     
-    console.log(index)
-    for(let s of index){
+    
+    for(let s of index){//for each s, connect the effects for the output
         console.log(index["index"])
         let bs = context.createBufferSource();
         bs.buffer = s.item;
         convolver=context.createConvolver();
         convolver.buffer=bs.buffer;
+        bs.playbackRate.value=pitch[s.i];
         bs.connect(convolver);
-        convolver.connect(reverbNode[s.i])
+        convolver.connect(reverbNode[s.i]);
+        bs.connect(delayNode[s.i]);
         bs.connect(volumeNode[s.i]);
-        bs.connect(convolver);
-        reverbNode[s.i].connect(context.destination);
+        bs.connect(panNode[s.i])
+        reverbNode[s.i].connect(volumeNode[s.i]);
+        panNode[s.i].connect(volumeNode[s.i]);
+        delayNode[s.i].connect(volumeNode[s.i]);
         volumeNode[s.i].connect(context.destination);
         bs.start(start_time);
-        
     }
-    
 }
 
 
@@ -300,16 +364,24 @@ function resetSample(){
 
 function playSound(kit_position) {
     // play the sound that corresponds to a specific row.
+    // before playing, connect each sound to the effects 
     const sound = context.createBufferSource();
     sound.buffer = kit_1[kit_position];
     convolver=context.createConvolver();
     convolver.buffer=sound.buffer;
+    sound.playbackRate.value=pitch[kit_position];
     sound.connect(convolver);
     convolver.connect(reverbNode[kit_position]);
-    reverbNode[kit_position].connect(context.destination)
-    sound.connect(volumeNode[kit_position])
-    volumeNode[kit_position].connect(context.destination); 
+    sound.connect(delayNode[kit_position]);
+    sound.connect(volumeNode[kit_position]);
+    sound.connect(panNode[kit_position]);
+    reverbNode[kit_position].connect(volumeNode[kit_position]);
+    panNode[kit_position].connect(volumeNode[kit_position]);
+    delayNode[kit_position].connect(volumeNode[kit_position]);
+    volumeNode[kit_position].connect(context.destination);
+    
     sound.start(context.currentTime);
+
 }
 
 
@@ -374,16 +446,28 @@ function initialize_curr_selection() {
     console.log(currSample);
 }
 
-async function initialize_range(){
+async function initialize_range(){//initialize the nodes needed for the effects, init the control array, connects all gainers to correct nodes 
     let gainers=document.querySelectorAll('[class*="volumegainer"]');
     for(let g of gainers){
-        control.push(g.value);//push slider to volume control
+        control.push(g.value);//push sliders
+        pitch.push(1);//initialize pitch (default sound)
         gainNode=context.createGain();
-        gainNode.gain.value=control[parseInt(g.id.slice(-1))-1]; 
+        gainNode.gain.value=0.3; 
         volumeNode.push(gainNode);//push the gain node
         gainNode=context.createGain();
         gainNode.gain.value=0;
         reverbNode.push(gainNode);//push the reverb node
+        gainNode=new StereoPannerNode(context);
+        gainNode.pan.value=0;
+        panNode.push(gainNode);//push pan node
+        delaytemp = context.createDelay();
+        delaytemp.delayTime.value = 0.3;
+        gainNode=context.createGain();
+        gainNode.gain.value=0;
+        delaytemp.connect(gainNode);
+        gainNode.connect(delaytemp);
+        delayNode.push(gainNode);//push gain node
+        delay.push(delaytemp);
     }
     
 }
