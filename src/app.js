@@ -107,7 +107,7 @@ function setupOnClickListeners(){
 
     bpm_area.addEventListener('change',(e)=>{
         //if I change any of the two inputs for the bpm
-        //I need to restart the play
+        //I need to restart the play (stop and then start simply)
         if(e.target.tagName.toLowerCase() == 'input'){
             bpmEdit(e.target);
             stopBoard();
