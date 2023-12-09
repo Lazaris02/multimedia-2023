@@ -110,8 +110,10 @@ function setupOnClickListeners(){
         //I need to restart the play (stop and then start simply)
         if(e.target.tagName.toLowerCase() == 'input'){
             bpmEdit(e.target);
-            stopBoard();
-            startBoard();
+            if(play){
+                stopBoard();
+                startBoard();
+            }
         }
     });
 
