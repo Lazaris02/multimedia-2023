@@ -106,7 +106,13 @@ function setupOnClickListeners(){
     
 
     bpm_area.addEventListener('change',(e)=>{
-        if(e.target.tagName.toLowerCase() == 'input'){bpmEdit(e.target);}
+        //if I change any of the two inputs for the bpm
+        //I need to restart the play (stop and then start simply)
+        if(e.target.tagName.toLowerCase() == 'input'){
+            bpmEdit(e.target);
+            stopBoard();
+            startBoard();
+        }
     });
 
 }
@@ -138,25 +144,38 @@ function clickTile(e){
 
 function playBoard(e){
     // if play button is clicked change its color
+    //also change the play-state and depending on where 
+    //we land we trigger the start/stopBoard()
     e.target.classList.toggle('func-button-on');
     play = !play;
     console.log(play, ' play', typeof play);
-    if (play) {
-        console.log('Worker start playing!');
-        bar_iterator = 0;
-        bar_animator = -1;
-        next_bar_time = context.currentTime;
-        timeManager.postMessage('start');
-        animationWorker.postMessage('start');
+    if (play) {startBoard();}else{stopBoard();}
+}
 
-    }
-    else {
-        timeManager.postMessage('stop');
-        animationWorker.postMessage('stop');
-        window.cancelAnimationFrame(bar_animation);
-        resetBarTracker();
-        bar_tracker = null;
-    }
+function startBoard(){
+    //performs all the necessary actions for the 
+    //board to start playing (from the beggining of the board)
+    //can be called from play board or bpm-eventListener
+    play = true;
+    bar_iterator = 0;
+    bar_animator = -1;
+    next_bar_time = context.currentTime;
+    timeManager.postMessage('start');
+    animationWorker.postMessage('start');
+
+}
+
+
+function stopBoard(){
+    //performs all the necessary actions for the 
+    //board to stop playing
+    //can be called from play board or bpm-eventListener
+    play=false;
+    timeManager.postMessage('stop');
+    animationWorker.postMessage('stop');
+    window.cancelAnimationFrame(bar_animation);
+    resetBarTracker();
+    bar_tracker = null;
 }
 
 function changeGain(e) {//function for changing control value on user input
@@ -441,7 +460,7 @@ async function initialize_sounds(path_array) {
 
 
 function initialize_curr_selection() {
-    // initializes the 
+    
     for (let i = 0; i < max_tiles; i++) {
         currSample[i] = Array(8).fill(0);
     }
