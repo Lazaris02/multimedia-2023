@@ -10,6 +10,7 @@ const setup_context = document.querySelector('#setup-context');
 
 const effect_control=document.querySelector('#effect_drop');
 
+const kit_drop = document.querySelector('#kit-drop');
 
 const bpm_area = document.querySelector('#bpm-area');
 const bpm_text = document.querySelector('#bpm-text');
@@ -96,6 +97,8 @@ function setupOnClickListeners(){
     sound_rows.addEventListener('click',clickTile);
     play_button.addEventListener('click',playBoard);
     reset_button.addEventListener('click',resetSample);
+
+    kit_drop.addEventListener('change', changeKit);
 
     effect_control.addEventListener('change',changeEff,false);
     let gainers=document.querySelectorAll('[class*="gainer"]');
@@ -273,6 +276,23 @@ function changeEff(){//function for changing the effect depending on the user in
             control[parseInt(g.id.slice(-1))-1]=g.value;
          }
     }
+}
+
+function changeKit(e){
+    //function for changing the sounds kits 
+    if (e.target.className.startsWith('trap')){
+        current_kit = kit_type[0];
+    }
+    if (e.target.className.startsWith('techno')){
+        current_kit = kit_type[1]
+    }
+    if (e.target.className.startsWith('future')){
+        current_kit = kit_type[2]
+    }
+    if (e.target.className.startsWith('boombap')){
+        current_kit = kit_type[3]
+    }
+
 }
 
 // -- other functions --
