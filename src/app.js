@@ -13,6 +13,7 @@ const effect_control=document.querySelector('#effect_drop');
 const kit_drop = document.querySelector('#kit-drop');
 const tabs = document.querySelector('#tabs');
 const demos = document.querySelector('#demos');
+const body = document.querySelector('body');
 
 const bpm_area = document.querySelector('#bpm-area');
 const bpm_text = document.querySelector('#bpm-text');
@@ -101,6 +102,7 @@ function setupOnClickListeners(){
     reset_button.addEventListener('click',resetSample);
 
     tabs.addEventListener('click', clickTab);
+    body.addEventListener('keypress',pressTab);
     kit_drop.addEventListener('change', changeKit);
     demos.addEventListener('click', clickDemo);
 
@@ -307,6 +309,33 @@ function clickTab(e){
         const position = e.target.value;
         playSound(position);
     }
+}
+
+function pressTab(e){
+    //function for playing the sounds when some specific keys of the keyboard are pressed
+    let key = e.key;
+    if (key == 'a'){
+        pos = 0;
+    }
+    else if (key == 's'){
+        pos = 1;
+    }
+    else if (key == 'd'){
+        pos = 2;
+    }
+    else if (key == 'j'){
+        pos = 3;
+    }
+    else if (key == 'k'){
+        pos = 4;
+    }
+    else if (key == 'l'){
+        pos = 5;
+    }
+    else{
+        return;
+    }
+    playSound(pos);
 }
 
 function clickDemo(e){
