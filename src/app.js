@@ -314,6 +314,7 @@ function clickTab(e){
 function pressTab(e){
     //function for playing the sounds when some specific keys of the keyboard are pressed
     let key = e.key;
+    console.log('Key pressed');
     if (key == 'a'){
         pos = 0;
     }

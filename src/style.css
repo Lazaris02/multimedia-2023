@@ -7,19 +7,30 @@
 :root{
     /* basic colors here */
     --text: #ffffff;
-    --background: #101410;
+    --background: #9DA5A2;
     --primary: #36453f;
     --secondary: #1f2728;
-    --accent: #7c9598;
+    --accent: #EAE3C9;
+    --beige: #EAE3C9;
 }
 
 /* generic styling */
-h1{
-    color:var(--text);
+
+header{
+    display: flex;
+    justify-content: center;
+}
+
+header > img{
+    height: 110px;
+    width: 800px;
+    margin-top: 20px; 
+    
 }
 
 body{
-    background-color: var(--background);
+    background-image: url("../assets/background3.jpg");
+
 }
 
 ul{
@@ -30,8 +41,11 @@ ul{
 
 #board{
     background-color:var(--accent);
-    height: 50vh;
-    min-width: 50vw;
+    height: 75vh;
+    width: 80vw;
+    margin: 40px;
+    border-radius: 25px;
+
 }
 
 .func-button{
@@ -41,6 +55,8 @@ ul{
     font-weight: 600;
     border:1px solid var(--secondary);
     border-radius:20px;
+    width: 80px;
+    height: 60px;
 }
 
 .func-button-on{
@@ -68,8 +84,8 @@ ul{
 
 .tile{
     /* styling of tiles */
-    height: 20px;
-    width: 20px;
+    height: 60px;
+    width: 60px;
     border: 1px solid var(--secondary);
     border-radius: 20%;
     background-color: var(--text);
@@ -92,9 +108,9 @@ ul{
 
 .mark-tile{
     /*  */
-    height: 5px;
-    width: 20px;
-    background-color: var(--background);
+    height: 10px;
+    width: 60px;
+    background-color: white;
     border-radius: 30%;
     margin:0 0.2em;
 }
@@ -102,7 +118,7 @@ ul{
 .animate-tile{
     /* this class is applied to the mark-tile 
     right when the play-iteration iterates the step */
-    background-color: var(--text);
+    background-color: black;
 }
 
 
@@ -114,6 +130,8 @@ ul{
     font-weight: 600;
     border:1px solid var(--secondary);
     border-radius:20px;
+    width: 80px;
+    height: 60px;
 }
 
 #bpm-area{
@@ -145,7 +163,21 @@ input::-webkit-inner-spin-button {
 }
 
 .tab{
-    width: 80px;
-    height: 80px;
+    width: 120px;
+    height: 120px;
+    border-radius: 5px;
     font-size: large;
+    background-color: black;
+    color: var(--accent);
+    
+}
+
+.demo{
+    height: 50px;
+    width: 80px;
+}
+
+#kit-drop, #effect_drop {
+    width: 150px;
+    height: 30px;
 }
