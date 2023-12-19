@@ -1,20 +1,22 @@
 *{
     margin: 0;
     padding: 0;
+    font-family: 'Ubuntu Mono', Arial, sans-serif;
 }
 
 
 :root{
-    /* basic colors here */
-    --text: #ffffff;
-    --background: #9DA5A2;
-    --primary: #36453f;
-    --secondary: #1f2728;
-    --accent: #EAE3C9;
-    --beige: #EAE3C9;
+    /* --- basic colors here --- */
+
+    --text: black;
+    --tiles: #828585;
+    --board: #515151;
+    --neon: #fefefe;
+    --neon-glow: #ffffff;
+    --tabs: #dc861c;
 }
 
-/* generic styling */
+/* --- generic styling --- */
 
 header{
     display: flex;
@@ -29,53 +31,95 @@ header > img{
 }
 
 body{
-    background-image: url("../assets/background3.jpg");
+    background-image: url("../assets/background.jpg");
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    
 
 }
 
 ul{
     list-style: none;
+    
 }
 
 
-
 #board{
-    background-color:var(--accent);
+    background-color:var(--board);
     height: 75vh;
-    width: 80vw;
+    width: 70vw;
     margin: 40px;
     border-radius: 25px;
 
 }
 
+
+/* --- buttons --- */
+
 .func-button{
-    background-color:var(--accent);
+    background-color:var(--board);
     padding: 0.5rem;
     color: var(--text);
     font-weight: 600;
-    border:1px solid var(--secondary);
+    border:1px solid var(--text);
     border-radius:20px;
-    width: 80px;
-    height: 60px;
+    width: 70px;
+    height: 50px;
 }
 
 .func-button-on{
-    background-color: var(--background);
+    background-color: var(--text);
 
 }
 
+.setup-button{
+    /* distinct look for the setup-button */
+    color: rgb(17, 136, 27);
+    background-color:var(--board);
+    padding: 0.5rem;
+    font-weight: 600;
+    border:1px solid var(--text);
+    border-radius:20px;
+    width: 70px;
+    height: 40px;
+}
+
+.demo{
+    height: 40px;
+    width: 65px;
+}
+
+/* --- drop downs --- */
+
+#kit-drop, #effect_drop {
+    width: 130px;
+    height: 30px;
+}
 
 
-
-/* for the tile-rows */
+/* --- tile-rows --- */
 
 .row{
     display: flex;
-    flex-direction:row nowrap;
+    flex-flow: row nowrap;
+    
+}
+
+#sound-1, #sound-2, #sound-3, #sound-4, #sound-5, #sound-6{
+    border-top: solid;
+    padding-top: 3px;
+    
+}
+
+.part{
+    margin-left: 8px;
 }
 
 .sound-name{
     width: 50px;
+    font-size: small;
 }
 
 .row>li>button{
@@ -84,20 +128,27 @@ ul{
 
 .tile{
     /* styling of tiles */
-    height: 60px;
-    width: 60px;
-    border: 1px solid var(--secondary);
+    height: 30px;
+    width: 30px;
+    border: 1px solid var(--text);
     border-radius: 20%;
-    background-color: var(--text);
+    background-color: var(--tiles);
 }
 
 .tile-on{
     /* changes the tile color if clicked */
-    background-color: var(--background);
+    border: 1px solid var(--neon);
+    box-shadow: 
+    0 0 50px var(--neon-glow), 
+    inset 0 0 50px var(--neon-glow);
 }
 
 .sound-name{
     color:var(--text);
+    align-self: center;
+    font-size: large;
+    /* padding-left: 20px; */
+
 }
 
 
@@ -109,40 +160,41 @@ ul{
 .mark-tile{
     /*  */
     height: 10px;
-    width: 60px;
-    background-color: white;
+    width: 30px;
+    background-color: var(--tiles);
     border-radius: 30%;
-    margin:0 0.2em;
 }
 
 .animate-tile{
     /* this class is applied to the mark-tile 
     right when the play-iteration iterates the step */
-    background-color: black;
+    border: 1px solid var(--text);
+    box-shadow: 
+    0 0 50px var(--neon-glow), 
+    inset 0 0 50px var(--neon-glow);
 }
 
+/* --- sliders --- */
 
-.setup-button{
-    /* distinct look for the setup-button */
-    color: rgb(17, 136, 27);
-    background-color:var(--accent);
-    padding: 0.5rem;
-    font-weight: 600;
-    border:1px solid var(--secondary);
-    border-radius:20px;
-    width: 80px;
-    height: 60px;
+#range-1, #range-2, #range-3, #range-4, #range-5, #range-6{
+    width: 100px;
+    
+
 }
+
+/* --- bpm section --- */
 
 #bpm-area{
     /* container for the + - bpm buttons */
     display: flex;
     gap: 10px;
+    height: 20px;
 }
 
 .small-button{
     /* styling for the + - bpm buttons */
-    width: 20px;
+    /* not used */
+    width: 15px;
 
 }
 
@@ -153,7 +205,7 @@ ul{
 #bpm-area>input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
     /* hides the number arrows in the bpm thing*/
-  -webkit-appearance: none;
+    -webkit-appearance: none;
 
 }
 
@@ -162,22 +214,13 @@ input::-webkit-inner-spin-button {
     color:var(--background);
 }
 
+/* --- tabs --- */
+
 .tab{
-    width: 120px;
-    height: 120px;
-    border-radius: 5px;
-    font-size: large;
-    background-color: black;
-    color: var(--accent);
-    
-}
-
-.demo{
-    height: 50px;
     width: 80px;
-}
-
-#kit-drop, #effect_drop {
-    width: 150px;
-    height: 30px;
+    height: 80px;
+    border-radius: 5px;
+    background-color: var(--tabs);
+    color: var(--text);
+    
 }
