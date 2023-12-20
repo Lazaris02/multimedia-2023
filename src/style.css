@@ -48,7 +48,7 @@ ul{
 
 #board{
     background-color:var(--board);
-    height: 75vh;
+    height: 60vh;
     width: 70vw;
     margin: 40px;
     border-radius: 25px;
@@ -59,43 +59,57 @@ ul{
 /* --- buttons --- */
 
 .func-button{
-    background-color:var(--board);
+    background-color:black;
+    color: white;
     padding: 0.5rem;
-    color: var(--text);
-    font-weight: 600;
+    font-weight: 800;
     border:1px solid var(--text);
     border-radius:20px;
-    width: 70px;
-    height: 50px;
+    width: 80px;
+    height: 60px;
+    font-size: large;
 }
 
 .func-button-on{
-    background-color: var(--text);
+    background-color: #8B0000;
+    color: black;
 
 }
 
 .setup-button{
     /* distinct look for the setup-button */
-    color: rgb(17, 136, 27);
-    background-color:var(--board);
+    color: black;
+    background-color: rgb(17, 136, 27);
     padding: 0.5rem;
     font-weight: 600;
     border:1px solid var(--text);
     border-radius:20px;
-    width: 70px;
-    height: 40px;
+    width: 80px;
+    height: 50px;
+    font-size: large;
 }
 
-.demo{
-    height: 40px;
+#user-buttons{
+    display: flex;
+    margin-left: 70px;
+    margin-bottom: 30px;
+    column-gap: 40px;
+}
+
+.demo, .save{
+    height: 65px;
     width: 65px;
+    border-radius: 50%;
 }
 
 /* --- drop downs --- */
 
 #kit-drop, #effect_drop {
-    width: 130px;
+    width: 140px;
     height: 30px;
+    background-color: black;
+    color: white;
+    font-size: large;
 }
 
 
@@ -104,35 +118,37 @@ ul{
 .row{
     display: flex;
     flex-flow: row nowrap;
-    
 }
 
 #sound-1, #sound-2, #sound-3, #sound-4, #sound-5, #sound-6{
     border-top: solid;
     padding-top: 3px;
-    
 }
 
 .part{
     margin-left: 8px;
 }
 
-.sound-name{
-    width: 50px;
-    font-size: small;
-}
-
 .row>li>button{
     margin:0 0.2em;
 }
 
-.tile{
+.tile, .num{
     /* styling of tiles */
-    height: 30px;
-    width: 30px;
+    height: 40px;
+    width: 40px;
     border: 1px solid var(--text);
     border-radius: 20%;
     background-color: var(--tiles);
+}
+
+.num{
+    border: none;
+    background-color: var(--background);
+    display: inline-flex; /* keep the inline nature of buttons */
+    align-items: flex-start;
+    justify-content: center;
+    font-size: large;  
 }
 
 .tile-on{
@@ -146,9 +162,8 @@ ul{
 .sound-name{
     color:var(--text);
     align-self: center;
-    font-size: large;
-    /* padding-left: 20px; */
-
+    font-size: larger;
+    width: 50px;
 }
 
 
@@ -160,7 +175,7 @@ ul{
 .mark-tile{
     /*  */
     height: 10px;
-    width: 30px;
+    width: 40px;
     background-color: var(--tiles);
     border-radius: 30%;
 }
@@ -215,12 +230,44 @@ input::-webkit-inner-spin-button {
 }
 
 /* --- tabs --- */
-
-.tab{
-    width: 80px;
-    height: 80px;
-    border-radius: 5px;
-    background-color: var(--tabs);
+.tab {
+    background: #c36d04;
+    border-radius: 12px;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    outline-offset: 4px;
+    width: 155px;
+  }
+.front-tab {
+    display: block;
+    padding: 40px 45px;
+    border-radius: 12px;
+    font-size: 3rem;
+    background: #dc861c;
     color: var(--text);
-    
+    transform: translateY(-8px);
 }
+
+.tab:active .front-tab {
+    transform: translateY(-2px); 
+}
+
+#tabs{
+    margin-left: 40px;
+}
+
+
+@media only screen and (max-width: 1450px) {
+    
+    #board{
+        width: 60vw;
+        height: 55vh;
+    }
+
+    .tile{
+        width: 30px;
+        height: 30px;
+    }
+}
+

@@ -135,7 +135,8 @@ function clickTile(e){
     // so that it can be played when we press play
     if (e.target.classList.contains('tile')) {
         e.target.classList.toggle('tile-on');
-        const parent = e.target.parentElement;
+        const temp_parent = e.target.parentElement;
+        const parent = temp_parent.parentElement;
         const sound_row = +parent.dataset.row;
         const curr_step = +e.target.dataset.tile;
         if (e.target.className == 'tile tile-on') {
@@ -447,8 +448,11 @@ function updateCurrentSample(sound_row, curr_step, add) {
 }
 
 function resetSample(){
+    console.log("You clicked the reset button");
+    console.log(onList);
     for(let tile of onList){
         tile.classList.remove('tile-on');
+        console.log('iam here!');
     }
     for(let key of Object.keys(currSample)){
         currSample[key] = Array(sound_num).fill(0);
