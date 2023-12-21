@@ -10,6 +10,10 @@ const setup_context = document.querySelector('#setup-context');
 
 const effect_control=document.querySelector('#effect_drop');
 
+const kit_drop = document.querySelector('#kit-drop');
+const tabs = document.querySelector('#tabs');
+const demos = document.querySelector('#demos');
+const body = document.querySelector('body');
 
 const bpm_area = document.querySelector('#bpm-area');
 const bpm_text = document.querySelector('#bpm-text');
@@ -97,6 +101,12 @@ function setupOnClickListeners(){
     play_button.addEventListener('click',playBoard);
     reset_button.addEventListener('click',resetSample);
 
+    tabs.addEventListener('click', clickTab);
+    body.addEventListener('keydown',pressTab);
+    body.addEventListener('keyup', unpressTab);
+    kit_drop.addEventListener('change', changeKit);
+    demos.addEventListener('click', clickDemo);
+
     effect_control.addEventListener('change',changeEff,false);
     let gainers=document.querySelectorAll('[class*="gainer"]');
     for(g of gainers){
@@ -126,7 +136,8 @@ function clickTile(e){
     // so that it can be played when we press play
     if (e.target.classList.contains('tile')) {
         e.target.classList.toggle('tile-on');
-        const parent = e.target.parentElement;
+        const temp_parent = e.target.parentElement;
+        const parent = temp_parent.parentElement;
         const sound_row = +parent.dataset.row;
         const curr_step = +e.target.dataset.tile;
         if (e.target.className == 'tile tile-on') {
@@ -275,6 +286,98 @@ function changeEff(){//function for changing the effect depending on the user in
     }
 }
 
+function changeKit(){
+    //function for changing the sound kits depending on the user input
+    let selected_kit = kit_drop.value;
+
+    if (selected_kit == 'trap'){
+        current_kit = kit_type[0];
+    }
+    if (selected_kit == 'techno'){
+        current_kit = kit_type[1];
+    }
+    if (selected_kit =='future'){
+        current_kit = kit_type[2];
+    }
+    if (selected_kit == 'boombap'){
+        current_kit = kit_type[3];
+    }
+
+}
+
+function clickTab(e){
+    //function for playing the appropriate sound when the user clicks on a tab
+    if (e.target.className == 'tab'){
+        const position = e.target.value;
+        playSound(position);
+    }
+}
+
+function pressTab(e){
+    //function for playing the sounds when some specific keys of the keyboard are pressed
+    if (context === undefined){
+        return;
+    }
+    let key = e.key;
+
+    if (key == 'a'){
+        pos = 0;
+    }
+    else if (key == 's'){
+        pos = 1;
+    }
+    else if (key == 'd'){
+        pos = 2;
+    }
+    else if (key == 'j'){
+        pos = 3;
+    }
+    else if (key == 'k'){
+        pos = 4;
+    }
+    else if (key == 'l'){
+        pos = 5;
+    }
+    else{
+        return;
+    }
+    tabs.children[pos].classList.add('tab-pressed'); 
+}
+
+function unpressTab(e){
+    //function for the effect of unpressing the tabs
+    let key = e.key;
+
+    if (key == 'a'){
+        pos = 0;
+    }
+    else if (key == 's'){
+        pos = 1;
+    }
+    else if (key == 'd'){
+        pos = 2;
+    }
+    else if (key == 'j'){
+        pos = 3;
+    }
+    else if (key == 'k'){
+        pos = 4;
+    }
+    else if (key == 'l'){
+        pos = 5;
+    }
+    else{
+        return;
+    }
+    tabs.children[pos].classList.remove('tab-pressed'); 
+    playSound(pos);
+}
+
+function clickDemo(e){
+    if (e.target.className == 'demo'){
+        console.log("you clicked a demo");
+    }
+}
 // -- other functions --
 
 
@@ -378,6 +481,7 @@ function updateCurrentSample(sound_row, curr_step, add) {
 }
 
 function resetSample(){
+    console.log(onList);
     for(let tile of onList){
         tile.classList.remove('tile-on');
     }
@@ -408,7 +512,6 @@ function playSound(kit_position) {
     sound.start(context.currentTime);
 
 }
-
 
 function bpmEdit(input_clicked){
     //when someone  changes bpm

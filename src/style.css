@@ -1,87 +1,178 @@
 *{
     margin: 0;
     padding: 0;
+    font-family: 'Ubuntu Mono', Arial, sans-serif;
 }
 
 
 :root{
-    /* basic colors here */
-    --text: #ffffff;
-    --background: #101410;
-    --primary: #36453f;
-    --secondary: #1f2728;
-    --accent: #7c9598;
+    /* --- basic colors here --- */
+
+    --text: black;
+    --tiles: #828585;
+    --board: #515151;
+    --neon: #fefefe;
+    --neon-glow: #ffffff;
+    --tabs: #dc861c;
 }
 
-/* generic styling */
-h1{
-    color:var(--text);
+/* --- generic styling --- */
+
+header{
+    display: flex;
+    justify-content: center;
+}
+
+header > img{
+    height: 110px;
+    width: 800px;
+    margin-top: 20px; 
+    
 }
 
 body{
-    background-color: var(--background);
+    background-image: url("../assets/background.jpg");
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    
+
 }
 
 ul{
     list-style: none;
+    
 }
-
 
 
 #board{
-    background-color:var(--accent);
-    height: 50vh;
-    min-width: 50vw;
+    background-color:var(--board);
+    height: 60vh;
+    width: 70vw;
+    margin: 40px;
+    border-radius: 25px;
+
 }
 
+
+/* --- buttons --- */
+
 .func-button{
-    background-color:var(--accent);
+    background-color:black;
+    color: white;
     padding: 0.5rem;
-    color: var(--text);
-    font-weight: 600;
-    border:1px solid var(--secondary);
+    font-weight: 800;
+    border:1px solid var(--text);
     border-radius:20px;
+    width: 80px;
+    height: 60px;
+    font-size: large;
+    cursor: pointer;
 }
 
 .func-button-on{
-    background-color: var(--background);
+    background-color: #8B0000;
+    color: black;
+    cursor: pointer;
 
 }
 
+.setup-button{
+    /* distinct look for the setup-button */
+    color: black;
+    background-color: rgb(17, 136, 27);
+    padding: 0.5rem;
+    font-weight: 600;
+    border:1px solid var(--text);
+    border-radius:20px;
+    width: 80px;
+    height: 50px;
+    font-size: large;
+    cursor: pointer;
+}
 
+#user-buttons{
+    display: flex;
+    margin-left: 70px;
+    margin-bottom: 30px;
+    column-gap: 40px;
+}
 
+.demo, .save{
+    height: 65px;
+    width: 65px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+}
 
-/* for the tile-rows */
+/* --- drop downs --- */
+
+#kit-drop, #effect_drop {
+    width: 140px;
+    height: 30px;
+    background-color: black;
+    color: white;
+    font-size: large;
+    cursor: pointer;
+}
+
+/* --- tile-rows --- */
 
 .row{
     display: flex;
-    flex-direction:row nowrap;
+    flex-flow: row nowrap;
 }
 
-.sound-name{
-    width: 50px;
+#sound-1, #sound-2, #sound-3, #sound-4, #sound-5, #sound-6{
+    border-top: solid;
+    padding-top: 3px;
+}
+
+.part{
+    margin-left: 8px;
 }
 
 .row>li>button{
     margin:0 0.2em;
 }
 
-.tile{
+.tile, .num{
     /* styling of tiles */
-    height: 20px;
-    width: 20px;
-    border: 1px solid var(--secondary);
+    height: 40px;
+    width: 40px;
+    border: 1px solid var(--text);
     border-radius: 20%;
-    background-color: var(--text);
+    background-color: var(--tiles);
+}
+
+.tile{
+    cursor: pointer;
+}
+
+.num{
+    border: none;
+    background-color: var(--background);
+    display: inline-flex; /* keep the inline nature of buttons */
+    align-items: flex-start;
+    justify-content: center;
+    font-size: large;  
 }
 
 .tile-on{
     /* changes the tile color if clicked */
-    background-color: var(--background);
+    border: 1px solid var(--neon);
+    box-shadow: 
+    0 0 50px var(--neon-glow), 
+    inset 0 0 50px var(--neon-glow);
 }
 
 .sound-name{
     color:var(--text);
+    align-self: center;
+    font-size: larger;
+    width: 50px;
 }
 
 
@@ -92,39 +183,121 @@ ul{
 
 .mark-tile{
     /*  */
-    height: 5px;
-    width: 20px;
-    background-color: var(--background);
+    height: 10px;
+    width: 40px;
+    background-color: var(--tiles);
     border-radius: 30%;
-    margin:0 0.2em;
 }
 
 .animate-tile{
     /* this class is applied to the mark-tile 
     right when the play-iteration iterates the step */
-    background-color: var(--text);
+    border: 1px solid var(--text);
+    box-shadow: 
+    0 0 50px var(--neon-glow), 
+    inset 0 0 50px var(--neon-glow);
+}
+
+/* --- sliders --- */
+
+#gainerlab{
+    font-size: larger;
+    font-weight: 300;
+}
+
+.sound-sliders{
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-items: center;
+    margin-left: 10px;
+    margin-top: 5px;
+}
+
+.slider{
+    margin: auto;
+    -webkit-appearance: none;
+    position: relative;
+    overflow: hidden;
+    height: 10px;
+    width: 150px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.slider::-webkit-slider-runnable-track {
+    background: #ddd;
+}
+
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 20px; 
+    height: 40px;
+    background: #fff;
+    box-shadow: -200px 0 0 200px #0c811c;
+    border: 2px solid #999; 
+}
+
+.slider::-moz-range-track {
+    height: 40px;
+    background: #ddd;
+}
+
+.slider::-moz-range-thumb {
+    background: #fff;
+    height: 40px;
+    width: 20px; 
+    border: 3px solid #999; 
+    border-radius: 0 !important;
+    box-shadow: -200px 0 0 200px #0c811c;
+    box-sizing: border-box;
+}
+
+.slider::-ms-fill-lower { 
+    background: #0c811c;
+}
+
+.slider::-ms-thumb { 
+    background: #fff;
+    border: 2px solid #999;
+    height: 40px;
+    width: 20px;
+    box-sizing: border-box;
+}
+
+.slider::-ms-ticks-after { 
+    display: none; 
+}
+
+.slider::-ms-ticks-before { 
+    display: none; 
+}
+
+.slider::-ms-track { 
+    background: #ddd;
+    color: transparent;
+    height: 40px;
+    border: none;
+}
+
+.slider::-ms-tooltip { 
+    display: none;
 }
 
 
-.setup-button{
-    /* distinct look for the setup-button */
-    color: rgb(17, 136, 27);
-    background-color:var(--accent);
-    padding: 0.5rem;
-    font-weight: 600;
-    border:1px solid var(--secondary);
-    border-radius:20px;
-}
+/* --- bpm section --- */
 
 #bpm-area{
     /* container for the + - bpm buttons */
     display: flex;
     gap: 10px;
+    height: 20px;
 }
 
 .small-button{
     /* styling for the + - bpm buttons */
-    width: 20px;
+    /* not used */
+    width: 15px;
 
 }
 
@@ -135,7 +308,7 @@ ul{
 #bpm-area>input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
     /* hides the number arrows in the bpm thing*/
-  -webkit-appearance: none;
+    -webkit-appearance: none;
 
 }
 
@@ -143,3 +316,49 @@ input::-webkit-inner-spin-button {
     text-align: center;
     color:var(--background);
 }
+
+/* --- tabs --- */
+
+.tab{
+    width: 155px;
+    height: 100px;
+    font-size: 25px;
+    font-weight: 800;
+    border: none;
+    cursor: pointer;
+    background-color: #dc861c;
+    color: var(--text);
+    border-radius: 8px;
+    box-shadow: 0px 6px 0px #b26910;
+}
+
+.tab:active{
+    border: none;
+    box-shadow: none;
+    transform: translate(0px,6px);
+}
+
+.tab-pressed{
+    border: none;
+    box-shadow: none;
+    transform: translate(0px,6px);
+}
+
+#tabs{
+    margin-left: 40px;
+}
+
+
+@media only screen and (max-width: 1450px) {
+    
+    #board{
+        width: 60vw;
+        height: 55vh;
+    }
+
+    .tile{
+        width: 30px;
+        height: 30px;
+    }
+}
+
