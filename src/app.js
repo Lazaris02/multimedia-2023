@@ -102,7 +102,8 @@ function setupOnClickListeners(){
     reset_button.addEventListener('click',resetSample);
 
     tabs.addEventListener('click', clickTab);
-    body.addEventListener('keypress',pressTab);
+    body.addEventListener('keydown',pressTab);
+    body.addEventListener('keyup', unpressTab);
     kit_drop.addEventListener('change', changeKit);
     demos.addEventListener('click', clickDemo);
 
@@ -226,6 +227,7 @@ function changeEff(){//function for changing the effect depending on the user in
         g.innerHTML=effect_control.value;
     }
     let gainers=document.querySelectorAll('[class*="gainer"]');
+    // gainers.classList.add('sliders');
     for(let g of gainers){
         g.className=effect_control.value+"gainer"+g.id.slice(-1);
     }
@@ -314,8 +316,11 @@ function clickTab(e){
 
 function pressTab(e){
     //function for playing the sounds when some specific keys of the keyboard are pressed
+    if (context === undefined){
+        return;
+    }
     let key = e.key;
-    console.log('Key pressed');
+
     if (key == 'a'){
         pos = 0;
     }
@@ -337,7 +342,36 @@ function pressTab(e){
     else{
         return;
     }
+    tabs.children[pos].classList.add('tab-pressed'); 
     playSound(pos);
+}
+
+function unpressTab(e){
+    //function for the effect of unpressing the tabs
+    let key = e.key;
+
+    if (key == 'a'){
+        pos = 0;
+    }
+    else if (key == 's'){
+        pos = 1;
+    }
+    else if (key == 'd'){
+        pos = 2;
+    }
+    else if (key == 'j'){
+        pos = 3;
+    }
+    else if (key == 'k'){
+        pos = 4;
+    }
+    else if (key == 'l'){
+        pos = 5;
+    }
+    else{
+        return;
+    }
+    tabs.children[pos].classList.remove('tab-pressed'); 
 }
 
 function clickDemo(e){
@@ -448,11 +482,9 @@ function updateCurrentSample(sound_row, curr_step, add) {
 }
 
 function resetSample(){
-    console.log("You clicked the reset button");
     console.log(onList);
     for(let tile of onList){
         tile.classList.remove('tile-on');
-        console.log('iam here!');
     }
     for(let key of Object.keys(currSample)){
         currSample[key] = Array(sound_num).fill(0);

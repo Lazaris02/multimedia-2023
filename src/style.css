@@ -68,11 +68,13 @@ ul{
     width: 80px;
     height: 60px;
     font-size: large;
+    cursor: pointer;
 }
 
 .func-button-on{
     background-color: #8B0000;
     color: black;
+    cursor: pointer;
 
 }
 
@@ -87,6 +89,7 @@ ul{
     width: 80px;
     height: 50px;
     font-size: large;
+    cursor: pointer;
 }
 
 #user-buttons{
@@ -100,6 +103,8 @@ ul{
     height: 65px;
     width: 65px;
     border-radius: 50%;
+    border: none;
+    cursor: pointer;
 }
 
 /* --- drop downs --- */
@@ -110,8 +115,8 @@ ul{
     background-color: black;
     color: white;
     font-size: large;
+    cursor: pointer;
 }
-
 
 /* --- tile-rows --- */
 
@@ -140,6 +145,10 @@ ul{
     border: 1px solid var(--text);
     border-radius: 20%;
     background-color: var(--tiles);
+}
+
+.tile{
+    cursor: pointer;
 }
 
 .num{
@@ -191,11 +200,90 @@ ul{
 
 /* --- sliders --- */
 
-#range-1, #range-2, #range-3, #range-4, #range-5, #range-6{
-    width: 100px;
-    
-
+#gainerlab{
+    font-size: larger;
+    font-weight: 300;
 }
+
+.sound-sliders{
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-items: center;
+    margin-left: 10px;
+    margin-top: 5px;
+}
+
+.slider{
+    margin: auto;
+    -webkit-appearance: none;
+    position: relative;
+    overflow: hidden;
+    height: 10px;
+    width: 150px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.slider::-webkit-slider-runnable-track {
+    background: #ddd;
+}
+
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 20px; 
+    height: 40px;
+    background: #fff;
+    box-shadow: -200px 0 0 200px #0c811c;
+    border: 2px solid #999; 
+}
+
+.slider::-moz-range-track {
+    height: 40px;
+    background: #ddd;
+}
+
+.slider::-moz-range-thumb {
+    background: #fff;
+    height: 40px;
+    width: 20px; 
+    border: 3px solid #999; 
+    border-radius: 0 !important;
+    box-shadow: -200px 0 0 200px #0c811c;
+    box-sizing: border-box;
+}
+
+.slider::-ms-fill-lower { 
+    background: #0c811c;
+}
+
+.slider::-ms-thumb { 
+    background: #fff;
+    border: 2px solid #999;
+    height: 40px;
+    width: 20px;
+    box-sizing: border-box;
+}
+
+.slider::-ms-ticks-after { 
+    display: none; 
+}
+
+.slider::-ms-ticks-before { 
+    display: none; 
+}
+
+.slider::-ms-track { 
+    background: #ddd;
+    color: transparent;
+    height: 40px;
+    border: none;
+}
+
+.slider::-ms-tooltip { 
+    display: none;
+}
+
 
 /* --- bpm section --- */
 
@@ -230,27 +318,30 @@ input::-webkit-inner-spin-button {
 }
 
 /* --- tabs --- */
-.tab {
-    background: #c36d04;
-    border-radius: 12px;
-    border: none;
-    padding: 0;
-    cursor: pointer;
-    outline-offset: 4px;
+
+.tab{
     width: 155px;
-  }
-.front-tab {
-    display: block;
-    padding: 40px 45px;
-    border-radius: 12px;
-    font-size: 3rem;
-    background: #dc861c;
+    height: 100px;
+    font-size: 25px;
+    font-weight: 800;
+    border: none;
+    cursor: pointer;
+    background-color: #dc861c;
     color: var(--text);
-    transform: translateY(-8px);
+    border-radius: 8px;
+    box-shadow: 0px 6px 0px #b26910;
 }
 
-.tab:active .front-tab {
-    transform: translateY(-2px); 
+.tab:active{
+    border: none;
+    box-shadow: none;
+    transform: translate(0px,6px);
+}
+
+.tab-pressed{
+    border: none;
+    box-shadow: none;
+    transform: translate(0px,6px);
 }
 
 #tabs{
