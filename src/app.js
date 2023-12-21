@@ -227,7 +227,6 @@ function changeEff(){//function for changing the effect depending on the user in
         g.innerHTML=effect_control.value;
     }
     let gainers=document.querySelectorAll('[class*="gainer"]');
-    // gainers.classList.add('sliders');
     for(let g of gainers){
         g.className=effect_control.value+"gainer"+g.id.slice(-1);
     }
@@ -343,7 +342,6 @@ function pressTab(e){
         return;
     }
     tabs.children[pos].classList.add('tab-pressed'); 
-    playSound(pos);
 }
 
 function unpressTab(e){
@@ -372,6 +370,7 @@ function unpressTab(e){
         return;
     }
     tabs.children[pos].classList.remove('tab-pressed'); 
+    playSound(pos);
 }
 
 function clickDemo(e){
