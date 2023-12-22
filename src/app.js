@@ -18,7 +18,8 @@ const body = document.querySelector('body');
 const bpm_area = document.querySelector('#bpm-area');
 const bpm_text = document.querySelector('#bpm-text');
 const bpm_range = document.querySelector('#bpm-range');
-
+const save_button = document.querySelector('#save-button');
+const load_button = document.querySelector('#load-button');
 
 let context;
 
@@ -127,6 +128,10 @@ function setupOnClickListeners(){
         }
     });
 
+    save_button.addEventListener('click',saveCurrentBoard);
+    load_button.addEventListener('click',loadSavedBoard);
+
+
 }
 
 function clickTile(e){
@@ -189,6 +194,35 @@ function stopBoard(){
     window.cancelAnimationFrame(bar_animation);
     resetBarTracker();
     bar_tracker = null;
+}
+
+function saveCurrentBoard(){
+    //if the user wants to save their temporary board only if not playing
+    if(play){return}
+    tempSave = [...onList] // copies the current board
+}
+
+function loadSavedBoard(){
+    //can't be loaded while playing
+    //if not playing just load every tile in the tempSave
+    if(play){return}
+    //first reset the current sample
+    resetSample();
+    //then just load the savedBoard into the sample 
+    let parent;
+    let sound_row;
+    let curr_step;
+
+    for(let tile of tempSave){
+        parent = tile.parentElement.parentElement;
+        sound_row = +parent.dataset.row;
+        curr_step = +tile.dataset.tile;
+        tile.classList.add('tile-on');
+        console.log(tile.classList);
+        updateCurrentSample(sound_row, curr_step, true);
+    }
+    //copy the saved board into the onList board
+    onList = [...tempSave];
 }
 
 function changeGain(e) {//function for changing control value on user input
