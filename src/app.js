@@ -1,3 +1,4 @@
+import { demoDataList } from './demoData.js';
 
 //---Get the basic elements of the board
 const board = document.querySelector('#board');
@@ -22,7 +23,6 @@ const save_button = document.querySelector('#save-button');
 const load_button = document.querySelector('#load-button');
 
 let context;
-
 let timeManager; // the worker that manages the sound-queue
 let animationWorker; // the worker that manages the top-bar animation
 
@@ -66,8 +66,6 @@ let bar_animator = 0; //keeps track of the step that should be animated
 
 
 
-// -- sound collections --
-
 
 // it is an object with 16 keys - 1 for each time
 // we add the sounds to be played in the respective key
@@ -82,6 +80,10 @@ let demoList = {}; // an object that will store a demoID as a key and a demo arr
 const bpm_step = 5;
 const temp_max = parseInt(bpm_text.max);
 const temp_min = parseInt(bpm_text.min);
+
+const NumOfDemos = 5;
+
+const rows = {}; // access to a row gives us access to its respective tiles
 
 // -- event-listeners + their functions --
 
@@ -107,11 +109,14 @@ function setupOnClickListeners(){
     body.addEventListener('keydown',pressTab);
     body.addEventListener('keyup', unpressTab);
     kit_drop.addEventListener('change', changeKit);
-    demos.addEventListener('click', clickDemo);
+    demos.addEventListener('click',(e)=>{
+        if (!e.target.classList.contains('demo')){return}
+        clickDemo(e.target.dataset.demoid);
+    });
 
     effect_control.addEventListener('change',changeEff,false);
     let gainers=document.querySelectorAll('[class*="gainer"]');
-    for(g of gainers){
+    for(let g of gainers){
         control.push(g.value)
         g.addEventListener('input',changeGain,false);
     }
@@ -194,7 +199,6 @@ function stopBoard(){
     animationWorker.postMessage('stop');
     window.cancelAnimationFrame(bar_animation);
     resetBarTracker();
-    bar_tracker = null;
 }
 
 function saveCurrentBoard(){
@@ -215,9 +219,10 @@ function loadSavedBoard(demoNum=-1){
     let sound_row;
     let curr_step;
 
-    const toLoad = (demoNum == -1) ? tempSave : demoList[demoNum];
-
+    const toLoad = (demoNum == -1) ? tempSave : demoList[demoNum]["demoNotes"];
+    console.log(toLoad)
     for(let tile of toLoad){
+        console.log(tile)
         parent = tile.parentElement.parentElement;
         sound_row = +parent.dataset.row;
         curr_step = +tile.dataset.tile;
@@ -410,9 +415,10 @@ function unpressTab(e){
     playSound(pos);
 }
 
-function clickDemo(e){
-    if (!e.target.classList.contains('demo')){return}
-    loadSavedBoard(e.target.dataset.demoid);
+function clickDemo(demoNum){
+    //also loads the values of the effects + the correct kit
+    console.log(demoNum);
+    loadSavedBoard(demoNum);  
 }
 // -- other functions --
 
@@ -478,11 +484,10 @@ function incrementNextBarTime(){
 
 function playStep(step,start_time) {
     // is passed an array containing samples to be played in sync
-    console.log(step)
     const index=step.map((item, i) => ({ item, i }))
     .filter(s=> s.item!=0);
-    
-    
+    let convolver;
+
     for(let s of index){//for each s, connect the effects for the output
         console.log(index["index"])
         let bs = context.createBufferSource();
@@ -517,7 +522,6 @@ function updateCurrentSample(sound_row, curr_step, add) {
 }
 
 function resetSample(){
-    console.log(onList);
     for(let tile of onList){
         tile.classList.remove('tile-on');
     }
@@ -533,7 +537,7 @@ function playSound(kit_position) {
     // before playing, connect each sound to the effects 
     const sound = context.createBufferSource();
     sound.buffer = kit_collection[current_kit][kit_position];
-    convolver=context.createConvolver();
+    let convolver=context.createConvolver();
     convolver.buffer=sound.buffer;
     sound.playbackRate.value=pitch[kit_position];
     sound.connect(convolver);
@@ -602,16 +606,41 @@ async function initialize_sounds(path_array) {
 
 function initializeDemos(){
     //this will be used to initialize the demoList object 
-    //with key-value pairs of key:demoId value:array like onList but filled with samples 
-
+    //with key-value pairs of key:demoId value: object that contains the kit info (bpm, kit_num etc.)
+    let demoTilesArray;
+    for(let i = 1; i <= NumOfDemos; i++){
+        demoList[i] = {};
+        demoTilesArray = translateTileArray(demoDataList[i]["demoNotes"]);
+        //also needs to translate the effects???
+        demoList[i]["demoNotes"] = demoTilesArray;
+    }
+    console.log(demoList);
 }
 
-function initialize_curr_selection() {
+function translateTileArray(tileArray){
+    //translates the numbers of the tileArray
+    //to actual tiles on the board -->stores them in the 
+    //demoList collection
+    let row;
+    let col;
+    let demoArray = [];
+
+    for(let tuple of tileArray){
+        row = tuple[0];
+        col = tuple[1];
+        console.log(row,col);
+        console.log(rows[row][col].dataset.tile);
+        demoArray.push(rows[row][col]);
+    }
+    
+    return demoArray;
+}
+
+function initialize_curr_selection(){
     
     for (let i = 0; i < max_tiles; i++) {
         currSample[i] = Array(8).fill(0);
     }
-    console.log(currSample);
 }
 
 
@@ -623,8 +652,20 @@ function initializeKitCollection(){
     }
 }
 
+function initializeRows(){
+    //creates a collection with row+col mappings to the tiles
+    for(let i=0; i< 6; i++){rows[i] = [];}
+    let row;
+    for(let tile of tiles){
+        row = tile.parentElement.parentElement.dataset.row;
+        rows[row].push(tile);
+    }
+}
+
 async function initialize_range(){//initialize the nodes needed for the effects, init the control array, connects all gainers to correct nodes 
     let gainers=document.querySelectorAll('[class*="volumegainer"]');
+    let gainNode;
+    let delaytemp;
     for(let g of gainers){
         control.push(g.value);//push sliders
         pitch.push(1);//initialize pitch (default sound)
@@ -651,10 +692,12 @@ async function initialize_range(){//initialize the nodes needed for the effects,
 
 function main(){
     initialize_curr_selection();
+    initializeRows();
     initializeKitCollection();
     initialize_sounds();
-    setupOnClickListeners();
+    initializeDemos();
     initialize_range();
+    setupOnClickListeners();
     timeManager = new Worker('timeManager.js');
     animationWorker = new Worker('barAnimationManager.js');
     timeManager.onmessage = (e)=>{
