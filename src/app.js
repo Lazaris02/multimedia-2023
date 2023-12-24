@@ -75,6 +75,7 @@ let bar_animator = 0; //keeps track of the step that should be animated
 // in the first column of the kit (maximum 8 sounds)
 let currSample = {};
 let onList = []; //keeps track of the on-tiles that need to be reset in some cases.
+let demoList = {}; // an object that will store a demoID as a key and a demo array as value
 
 
 
@@ -199,30 +200,32 @@ function stopBoard(){
 function saveCurrentBoard(){
     //if the user wants to save their temporary board only if not playing
     if(play){return}
-    tempSave = [...onList] // copies the current board
+    tempSave = [...onList]; // copies the current board
 }
 
-function loadSavedBoard(){
+function loadSavedBoard(demoNum=-1){
+    //demonumber : -1 if not for the demo 1...max_num for each demo 
     //can't be loaded while playing
     //if not playing just load every tile in the tempSave
     if(play){return}
     //first reset the current sample
     resetSample();
-    //then just load the savedBoard into the sample 
+    //then just load the demo or current-save into the sample 
     let parent;
     let sound_row;
     let curr_step;
 
-    for(let tile of tempSave){
+    const toLoad = (demoNum == -1) ? tempSave : demoList[demoNum];
+
+    for(let tile of toLoad){
         parent = tile.parentElement.parentElement;
         sound_row = +parent.dataset.row;
         curr_step = +tile.dataset.tile;
         tile.classList.add('tile-on');
-        console.log(tile.classList);
         updateCurrentSample(sound_row, curr_step, true);
     }
     //copy the saved board into the onList board
-    onList = [...tempSave];
+    onList = [...toLoad];
 }
 
 function changeGain(e) {//function for changing control value on user input
@@ -408,9 +411,8 @@ function unpressTab(e){
 }
 
 function clickDemo(e){
-    if (e.target.className == 'demo'){
-        console.log("you clicked a demo");
-    }
+    if (!e.target.classList.contains('demo')){return}
+    loadSavedBoard(e.target.dataset.demoid);
 }
 // -- other functions --
 
@@ -522,6 +524,7 @@ function resetSample(){
     for(let key of Object.keys(currSample)){
         currSample[key] = Array(sound_num).fill(0);
     }
+    onList = [];
 }
 
 
@@ -597,6 +600,11 @@ async function initialize_sounds(path_array) {
     console.log('sounds ready');
 }
 
+function initializeDemos(){
+    //this will be used to initialize the demoList object 
+    //with key-value pairs of key:demoId value:array like onList but filled with samples 
+
+}
 
 function initialize_curr_selection() {
     
@@ -605,6 +613,7 @@ function initialize_curr_selection() {
     }
     console.log(currSample);
 }
+
 
 
 function initializeKitCollection(){
