@@ -284,8 +284,8 @@ function changeEff(){//function for changing the effect depending on the user in
     if(gainers[0].className.startsWith('reverb')){
         for(let g of gainers){
             g.min=0;
-            g.max=1;
-            g.step=0.01;
+            g.max=5;
+            g.step=0.1;
             g.value=reverbNode[parseInt(g.id.slice(-1))-1].gain.value;
             control[parseInt(g.id.slice(-1))-1]=g.value;
          }
