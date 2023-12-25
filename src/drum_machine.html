@@ -9,7 +9,7 @@
     <link href='http://fonts.googleapis.com/css?family=Ubuntu+Mono|Oleo+Script+Swash+Caps' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="style.css">
 
-    <script src="app.js" defer></script>
+    <script src="app.js" type="module" defer></script>
 
 </head>
 
@@ -22,7 +22,8 @@
             <button id="play-button" class="func-button">Play</button>
             <button id="reset-button" class="func-button">Reset</button>
             <button id="setup-context" class="setup-button">Setup</button>
-
+            <button id="save-button" class="func-button">Save</button>
+            <button id="load-button" class="func-button">Load</button>
             <select name="kit-drop" id="kit-drop">
                 <option value="trap">trap</option>
                 <option value="techno">techno</option>
@@ -350,11 +351,11 @@
 
             <div id="user-buttons">
                 <div id="demos">
-                    <button class="demo" value="0">Demo 1</button>
-                    <button class="demo" value="1">Demo 2</button>
-                    <button class="demo" value="2">Demo 3</button>
-                    <button class="demo" value="3">Demo 4</button>
-                    <button class="demo" value="4">Demo 5</button>
+                    <button class="demo" value="0" data-demoid="1">Demo 1</button>
+                    <button class="demo" value="1" data-demoid="2">Demo 2</button>
+                    <button class="demo" value="2" data-demoid="3">Demo 3</button>
+                    <button class="demo" value="3" data-demoid="4">Demo 4</button>
+                    <button class="demo" value="4" data-demoid="5">Demo 5</button>
                 </div>
 
                 <div id="saves">
