@@ -74,7 +74,7 @@ let bar_animator = 0; //keeps track of the step that should be animated
 let currSample = {};
 let onList = []; //keeps track of the on-tiles that need to be reset in some cases.
 let demoList = {}; // an object that will store a demoID as a key and a demo array as value
-
+let tempSave;
 
 
 const bpm_step = 5;
@@ -135,7 +135,7 @@ function setupOnClickListeners(){
     });
 
     save_button.addEventListener('click',saveCurrentBoard);
-    load_button.addEventListener('click',loadSavedBoard);
+    load_button.addEventListener('click',()=>loadSavedBoard(-1));
 
 
 }
@@ -207,7 +207,7 @@ function saveCurrentBoard(){
     tempSave = [...onList]; // copies the current board
 }
 
-function loadSavedBoard(demoNum=-1){
+function loadSavedBoard(demoNum){
     //demonumber : -1 if not for the demo 1...max_num for each demo 
     //can't be loaded while playing
     //if not playing just load every tile in the tempSave
@@ -218,7 +218,7 @@ function loadSavedBoard(demoNum=-1){
     let parent;
     let sound_row;
     let curr_step;
-
+    console.log(demoNum,"demonum")
     const toLoad = (demoNum == -1) ? tempSave : demoList[demoNum]["demoNotes"];
     console.log(toLoad)
     for(let tile of toLoad){
@@ -229,8 +229,8 @@ function loadSavedBoard(demoNum=-1){
         tile.classList.add('tile-on');
         updateCurrentSample(sound_row, curr_step, true);
     }
-    //copy the saved board into the onList board
     onList = [...toLoad];
+    //probably also needs to load bpm etc.
 }
 
 function changeGain(e) {//function for changing control value on user input
@@ -328,21 +328,24 @@ function changeEff(){//function for changing the effect depending on the user in
     }
 }
 
-function changeKit(){
+function changeKit(demoValue=-1){
     //function for changing the sound kits depending on the user input
-    let selected_kit = kit_drop.value;
-
-    if (selected_kit == 'trap'){
+    let selected_kit = (demoValue == -1) ? kit_drop.value : kit_type[demoValue];
+    if (selected_kit == 'trap/'){
         current_kit = kit_type[0];
     }
-    if (selected_kit == 'techno'){
+    if (selected_kit == 'techno/'){
         current_kit = kit_type[1];
     }
-    if (selected_kit =='future'){
+    if (selected_kit =='future/'){
         current_kit = kit_type[2];
     }
-    if (selected_kit == 'boombap'){
+    if (selected_kit == 'boombap/'){
         current_kit = kit_type[3];
+    }
+
+    if(demoValue != -1){
+        kit_drop.value = selected_kit;
     }
 
 }
@@ -418,7 +421,7 @@ function unpressTab(e){
 function clickDemo(demoNum){
     //also needs to edit the sliders values
     changeKit(demoList[demoNum]["kit"]);
-    bpmEdit(isDemo=true,demoValue=demoList[demoNum]["bpm_value"]);
+    bpmEdit(undefined,true,demoList[demoNum]["bpm_value"]);
     loadSavedBoard(demoNum);  
 }
 // -- other functions --
