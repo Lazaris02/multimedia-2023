@@ -416,8 +416,9 @@ function unpressTab(e){
 }
 
 function clickDemo(demoNum){
-    //also loads the values of the effects + the correct kit
-    console.log(demoNum);
+    //also needs to edit the sliders values
+    changeKit(demoList[demoNum]["kit"]);
+    bpmEdit(isDemo=true,demoValue=demoList[demoNum]["bpm_value"]);
     loadSavedBoard(demoNum);  
 }
 // -- other functions --
@@ -554,9 +555,10 @@ function playSound(kit_position) {
 
 }
 
-function bpmEdit(input_clicked){
-    //when someone  changes bpm
-    let curr_temp = parseInt(input_clicked.value);
+function bpmEdit(input_clicked=undefined,isDemo=false,demoValue=0){
+    //changes the bpm either from an input or 
+    //when a demo is clicked 
+    let curr_temp = isDemo ? demoValue : parseInt(input_clicked.value);
 
     if(curr_temp<=temp_max && curr_temp>=temp_min){
        tempo = curr_temp;
@@ -611,8 +613,14 @@ function initializeDemos(){
     for(let i = 1; i <= NumOfDemos; i++){
         demoList[i] = {};
         demoTilesArray = translateTileArray(demoDataList[i]["demoNotes"]);
-        //also needs to translate the effects???
+        //needs to translate the effects
+        //needs to add the bpm 
+        //needs to change the kit
+        //needs to change the bpm
         demoList[i]["demoNotes"] = demoTilesArray;
+        demoList[i]["bpm_value"] = demoDataList[i]["bpm_value"];
+        demoList[i]["kit"] = demoDataList[i]["kit"];
+
     }
     console.log(demoList);
 }
