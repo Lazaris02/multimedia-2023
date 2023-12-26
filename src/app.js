@@ -108,7 +108,7 @@ function setupOnClickListeners(){
     tabs.addEventListener('click', clickTab);
     body.addEventListener('keydown',pressTab);
     body.addEventListener('keyup', unpressTab);
-    kit_drop.addEventListener('change', changeKit);
+    kit_drop.addEventListener('change',()=> changeKit(-1));
     demos.addEventListener('click',(e)=>{
         if (!e.target.classList.contains('demo')){return}
         clickDemo(e.target.dataset.demoid);
@@ -218,7 +218,6 @@ function loadSavedBoard(demoNum){
     let parent;
     let sound_row;
     let curr_step;
-    console.log(demoNum,"demonum")
     const toLoad = (demoNum == -1) ? tempSave : demoList[demoNum]["demoNotes"];
     console.log(toLoad)
     for(let tile of toLoad){
@@ -270,7 +269,7 @@ function changeEff(){//function for changing the effect depending on the user in
     }
     let gainers=document.querySelectorAll('[class*="gainer"]');
     for(let g of gainers){
-        g.className=effect_control.value+"gainer"+g.id.slice(-1);
+        g.className=effect_control.value+"gainer"+g.id.slice(-1)+" slider";
     }
     if(gainers[0].className.startsWith('volume')){
         for(let g of gainers){
@@ -328,7 +327,7 @@ function changeEff(){//function for changing the effect depending on the user in
     }
 }
 
-function changeKit(demoValue=-1){
+function changeKit(demoValue){
     //function for changing the sound kits depending on the user input
     let selected_kit = (demoValue == -1) ? kit_drop.value : kit_type[demoValue];
     if (selected_kit == 'trap/'){
@@ -344,9 +343,7 @@ function changeKit(demoValue=-1){
         current_kit = kit_type[3];
     }
 
-    if(demoValue != -1){
-        kit_drop.value = selected_kit;
-    }
+    kit_drop.value = selected_kit;
 
 }
 
@@ -606,7 +603,7 @@ async function initialize_sounds(path_array) {
             kit_collection[type].push(sound);
         }
     }
-    console.log('sounds ready');
+    console.log('Sounds ready');
 }
 
 function initializeDemos(){
@@ -625,7 +622,7 @@ function initializeDemos(){
         demoList[i]["kit"] = demoDataList[i]["kit"];
 
     }
-    console.log(demoList);
+    console.log("Demos ready!");
 }
 
 function translateTileArray(tileArray){
@@ -639,8 +636,7 @@ function translateTileArray(tileArray){
     for(let tuple of tileArray){
         row = tuple[0];
         col = tuple[1];
-        console.log(row,col);
-        console.log(rows[row][col].dataset.tile);
+
         demoArray.push(rows[row][col]);
     }
     
@@ -648,7 +644,6 @@ function translateTileArray(tileArray){
 }
 
 function initialize_curr_selection(){
-    
     for (let i = 0; i < max_tiles; i++) {
         currSample[i] = Array(8).fill(0);
     }
@@ -671,6 +666,7 @@ function initializeRows(){
         row = tile.parentElement.parentElement.dataset.row;
         rows[row].push(tile);
     }
+    console.log("rows and tiles mapped!")
 }
 
 async function initialize_range(){//initialize the nodes needed for the effects, init the control array, connects all gainers to correct nodes 
@@ -698,6 +694,7 @@ async function initialize_range(){//initialize the nodes needed for the effects,
         delayNode.push(gainNode);//push gain node
         delay.push(delaytemp);
     }
+    console.log("Effect Nodes initialized");
     
 }
 
