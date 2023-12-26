@@ -74,7 +74,7 @@ let bar_animator = 0; //keeps track of the step that should be animated
 let currSample = {};
 let onList = []; //keeps track of the on-tiles that need to be reset in some cases.
 let demoList = {}; // an object that will store a demoID as a key and a demo array as value
-
+let tempSave;
 
 
 const bpm_step = 5;
@@ -108,7 +108,7 @@ function setupOnClickListeners(){
     tabs.addEventListener('click', clickTab);
     body.addEventListener('keydown',pressTab);
     body.addEventListener('keyup', unpressTab);
-    kit_drop.addEventListener('change', changeKit);
+    kit_drop.addEventListener('change',()=> changeKit(-1));
     demos.addEventListener('click',(e)=>{
         if (!e.target.classList.contains('demo')){return}
         clickDemo(e.target.dataset.demoid);
@@ -135,7 +135,7 @@ function setupOnClickListeners(){
     });
 
     save_button.addEventListener('click',saveCurrentBoard);
-    load_button.addEventListener('click',loadSavedBoard);
+    load_button.addEventListener('click',()=>loadSavedBoard(-1));
 
 
 }
@@ -207,7 +207,7 @@ function saveCurrentBoard(){
     tempSave = [...onList]; // copies the current board
 }
 
-function loadSavedBoard(demoNum=-1){
+function loadSavedBoard(demoNum){
     //demonumber : -1 if not for the demo 1...max_num for each demo 
     //can't be loaded while playing
     //if not playing just load every tile in the tempSave
@@ -218,7 +218,6 @@ function loadSavedBoard(demoNum=-1){
     let parent;
     let sound_row;
     let curr_step;
-
     const toLoad = (demoNum == -1) ? tempSave : demoList[demoNum]["demoNotes"];
     console.log(toLoad)
     for(let tile of toLoad){
@@ -229,8 +228,8 @@ function loadSavedBoard(demoNum=-1){
         tile.classList.add('tile-on');
         updateCurrentSample(sound_row, curr_step, true);
     }
-    //copy the saved board into the onList board
     onList = [...toLoad];
+    //probably also needs to load bpm etc.
 }
 
 function changeGain(e) {//function for changing control value on user input
@@ -270,7 +269,7 @@ function changeEff(){//function for changing the effect depending on the user in
     }
     let gainers=document.querySelectorAll('[class*="gainer"]');
     for(let g of gainers){
-        g.className=effect_control.value+"gainer"+g.id.slice(-1);
+        g.className=effect_control.value+"gainer"+g.id.slice(-1)+" slider";
     }
     if(gainers[0].className.startsWith('volume')){
         for(let g of gainers){
@@ -328,22 +327,23 @@ function changeEff(){//function for changing the effect depending on the user in
     }
 }
 
-function changeKit(){
+function changeKit(demoValue){
     //function for changing the sound kits depending on the user input
-    let selected_kit = kit_drop.value;
-
-    if (selected_kit == 'trap'){
+    let selected_kit = (demoValue == -1) ? kit_drop.value : kit_type[demoValue];
+    if (selected_kit == 'trap/'){
         current_kit = kit_type[0];
     }
-    if (selected_kit == 'techno'){
+    if (selected_kit == 'techno/'){
         current_kit = kit_type[1];
     }
-    if (selected_kit =='future'){
+    if (selected_kit =='future/'){
         current_kit = kit_type[2];
     }
-    if (selected_kit == 'boombap'){
+    if (selected_kit == 'boombap/'){
         current_kit = kit_type[3];
     }
+
+    kit_drop.value = selected_kit;
 
 }
 
@@ -416,8 +416,9 @@ function unpressTab(e){
 }
 
 function clickDemo(demoNum){
-    //also loads the values of the effects + the correct kit
-    console.log(demoNum);
+    //also needs to edit the sliders values
+    changeKit(demoList[demoNum]["kit"]);
+    bpmEdit(undefined,true,demoList[demoNum]["bpm_value"]);
     loadSavedBoard(demoNum);  
 }
 // -- other functions --
@@ -554,9 +555,10 @@ function playSound(kit_position) {
 
 }
 
-function bpmEdit(input_clicked){
-    //when someone  changes bpm
-    let curr_temp = parseInt(input_clicked.value);
+function bpmEdit(input_clicked=undefined,isDemo=false,demoValue=0){
+    //changes the bpm either from an input or 
+    //when a demo is clicked 
+    let curr_temp = isDemo ? demoValue : parseInt(input_clicked.value);
 
     if(curr_temp<=temp_max && curr_temp>=temp_min){
        tempo = curr_temp;
@@ -601,7 +603,7 @@ async function initialize_sounds(path_array) {
             kit_collection[type].push(sound);
         }
     }
-    console.log('sounds ready');
+    console.log('Sounds ready');
 }
 
 function initializeDemos(){
@@ -611,10 +613,16 @@ function initializeDemos(){
     for(let i = 1; i <= NumOfDemos; i++){
         demoList[i] = {};
         demoTilesArray = translateTileArray(demoDataList[i]["demoNotes"]);
-        //also needs to translate the effects???
+        //needs to translate the effects
+        //needs to add the bpm 
+        //needs to change the kit
+        //needs to change the bpm
         demoList[i]["demoNotes"] = demoTilesArray;
+        demoList[i]["bpm_value"] = demoDataList[i]["bpm_value"];
+        demoList[i]["kit"] = demoDataList[i]["kit"];
+
     }
-    console.log(demoList);
+    console.log("Demos ready!");
 }
 
 function translateTileArray(tileArray){
@@ -628,8 +636,7 @@ function translateTileArray(tileArray){
     for(let tuple of tileArray){
         row = tuple[0];
         col = tuple[1];
-        console.log(row,col);
-        console.log(rows[row][col].dataset.tile);
+
         demoArray.push(rows[row][col]);
     }
     
@@ -637,7 +644,6 @@ function translateTileArray(tileArray){
 }
 
 function initialize_curr_selection(){
-    
     for (let i = 0; i < max_tiles; i++) {
         currSample[i] = Array(8).fill(0);
     }
@@ -660,6 +666,7 @@ function initializeRows(){
         row = tile.parentElement.parentElement.dataset.row;
         rows[row].push(tile);
     }
+    console.log("rows and tiles mapped!")
 }
 
 async function initialize_range(){//initialize the nodes needed for the effects, init the control array, connects all gainers to correct nodes 
@@ -687,6 +694,7 @@ async function initialize_range(){//initialize the nodes needed for the effects,
         delayNode.push(gainNode);//push gain node
         delay.push(delaytemp);
     }
+    console.log("Effect Nodes initialized");
     
 }
 
