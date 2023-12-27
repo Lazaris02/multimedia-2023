@@ -91,7 +91,11 @@ const rows = {}; // access to a row gives us access to its respective tiles
 
 setup_context.addEventListener('click',(e)=>{
     //the gesture needed for the app to properly setup
-    
+    // e.target.classList.toggle('switch-on');
+
+    console.log("im here!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+    console.log(e.target.classList);
+
     if(context === undefined){
         context = new AudioContext();
     }
@@ -265,7 +269,7 @@ function changeEff(){//function for changing the effect depending on the user in
     //,set the value of the slider from the effect array so user does not lose his choices and finaly update the control array
     let gainerslabels=document.querySelectorAll('#gainerlab')
     for(let g of gainerslabels){
-        g.innerHTML=effect_control.value;
+        // g.innerHTML=effect_control.value;
     }
     let gainers=document.querySelectorAll('[class*="gainer"]');
     for(let g of gainers){
@@ -357,10 +361,12 @@ function clickTab(e){
 
 function pressTab(e){
     //function for playing the sounds when some specific keys of the keyboard are pressed
+    console.log("you pressed a tab");
     if (context === undefined){
         return;
     }
     let key = e.key;
+    let pos;
 
     if (key == 'a'){
         pos = 0;
@@ -389,6 +395,7 @@ function pressTab(e){
 function unpressTab(e){
     //function for the effect of unpressing the tabs
     let key = e.key;
+    let pos;
 
     if (key == 'a'){
         pos = 0;

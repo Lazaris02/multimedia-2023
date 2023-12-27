@@ -19,32 +19,42 @@
     </header>
     <ul class="sound-rows">
         <div id="board">
-            <button id="play-button" class="func-button">Play</button>
-            <button id="reset-button" class="func-button">Reset</button>
-            <button id="setup-context" class="setup-button">Setup</button>
-            <button id="save-button" class="func-button">Save</button>
-            <button id="load-button" class="func-button">Load</button>
-            <select name="kit-drop" id="kit-drop">
-                <option value="trap/">trap</option>
-                <option value="techno/">techno</option>
-                <option value="future/">future</option>
-                <option value="boombap/">boombap</option>
-            </select>
+
+            <div id="top">
+                <label class="switch">
+                    <div class="round"><input name="onoff" id="onoff" type="checkbox">
+                        <div class="back"><label for="onoff" class="but"><span class="off">OFF</span><span class="on">ON</span></label></div>
+                    </div>
+                </label>
+                
+                <button id="play-button" class="func-button">Play</button>
+                <button id="reset-button" class="func-button">Reset</button>
+                <button id="setup-context" class="setup-button">Setup</button>
+                <button id="save-button" class="func-button">Save</button>
+                <button id="load-button" class="func-button">Load</button>
+                
+                <select name="kit-drop" id="kit-drop">
+                    <option value="trap/">trap</option>
+                    <option value="techno/">techno</option>
+                    <option value="future/">future</option>
+                    <option value="boombap/">boombap</option>
+                </select>
 
 
-            <select name="effect_drop" id="effect_drop">
-                <option value="volume">volume</option>
-                <option value="reverb">reverb</option>
-                <option value="pan">pan</option>
-                <option value="pitch">pitch</option>
-                <option value="delay">delay</option>
-                <option value="time (delay)">time (delay)</option>
-            </select>
+                <select name="effect_drop" id="effect_drop">
+                    <option value="volume">volume</option>
+                    <option value="reverb">reverb</option>
+                    <option value="pan">pan</option>
+                    <option value="pitch">pitch</option>
+                    <option value="delay">delay</option>
+                    <option value="time (delay)">time (delay)</option>
+                </select>
 
-            <div id="bpm-area">
-                <input type="range" id="bpm-range" value="100" min="50" max="200" step="1"> 
-                <input type="number" id="bpm-text" value="100" min="50" max="200" step="5">
-                <label for="bpm-text">BPM</label>
+                <div id="bpm-area">
+                    <input type="range" id="bpm-range" value="100" min="50" max="200" step="1"> 
+                    <input type="number" id="bpm-text" value="100" min="50" max="200" step="5">
+                    <label for="bpm-text">BPM</label>
+                </div>
             </div>
 
             <div class="row">
@@ -114,8 +124,9 @@
 
                 </li>
                 <div class="sound-sliders">
-                    <label for="range-1" id="gainerlab">Volume</label>
-                    <input class="volumegainer1 slider" type="range" id="range-1" min="0" max="0.8" step="0.01">
+                    <label for="range-1" id="gainerlab"></label>
+                    <input class="volumegainer1 slider" type="range" id="range-1" min="0" max="0.8" step="0.01" 
+                        oninput="rangeValue.innerText = this.value"><p id="rangeValue"></p>
                 </div>
             </div>
 
@@ -153,7 +164,7 @@
 
                 </li>
                 <div class="sound-sliders">
-                    <label for="range-2" id="gainerlab">Volume</label>
+                    <label for="range-2" id="gainerlab"></label>
                     <input class="volumegainer2 slider" type="range" id="range-2" min="0" max="0.8" step="0.01">
                 </div>
             </div>
@@ -191,7 +202,7 @@
 
                 </li>
                 <div class="sound-sliders">
-                    <label for="range-3" id="gainerlab">Volume</label>
+                    <label for="range-3" id="gainerlab"></label>
                     <input class="volumegainer3 slider" type="range" id="range-3" min="0" max="0.8" step="0.01">
                 </div>
             </div>
@@ -230,7 +241,7 @@
 
                 </li>
                 <div class="sound-sliders">
-                    <label for="range-4" id="gainerlab">Volume</label>
+                    <label for="range-4" id="gainerlab"></label>
                     <input class="volumegainer4 slider" type="range" id="range-4" min="0" max="0.8" step="0.01">
                 </div>
             </div>
@@ -270,7 +281,7 @@
 
                 </li>
                 <div class="sound-sliders">
-                    <label for="range-5" id="gainerlab">Volume</label>
+                    <label for="range-5" id="gainerlab"></label>
                     <input class="volumegainer5 slider" type="range" id="range-5" min="0" max="0.8" step="0.01">
                 </div>
             </div>
@@ -309,7 +320,7 @@
 
                 </li>
                 <div class="sound-sliders">
-                    <label for="range-6" id="gainerlab">Volume</label>
+                    <label for="range-6" id="gainerlab"></label>
                     <input class="volumegainer6 slider" type="range" id="range-6" min="0" max="0.8" step="0.01">
                 </div>
             </div>
@@ -349,37 +360,29 @@
                
             </div>
 
-            <div id="user-buttons">
-                <div id="demos">
-                    <button class="demo" value="0" data-demoid="1">Demo 1</button>
-                    <button class="demo" value="1" data-demoid="2">Demo 2</button>
-                    <button class="demo" value="2" data-demoid="3">Demo 3</button>
-                    <button class="demo" value="3" data-demoid="4">Demo 4</button>
-                    <button class="demo" value="4" data-demoid="5">Demo 5</button>
-                </div>
-
-                <div id="saves">
-                    <button class="save" value="0">Save 1</button>
-                    <button class="save" value="1">Save 2</button>
-                    <button class="save" value="2">Save 3</button>
-                    <button class="save" value="3">Save 4</button>
-                    <button class="save" value="4">Save 5</button>
-                </div>
+            <div id="demos">
+                <button class="demo" value="0" data-demoid="1">D1</button>
+                <button class="demo" value="1" data-demoid="2">D2</button>
+                <button class="demo" value="2" data-demoid="3">D3</button>
+                <button class="demo" value="3" data-demoid="4">D4</button>
+                <button class="demo" value="4" data-demoid="5">D5</button>
             </div>
+
 
             <div id="tabs">
-                <button class="tab" value="0">Kick</button>
+                <button class="tab" value="0">Kick <br><p>(a)</p></button>
 
-                <button class="tab" value="1">Snare</button>
+                <button class="tab" value="1">Snare <br><p>(s)</p></button>
 
-                <button class="tab" value="2">Clap</button>
+                <button class="tab" value="2">Clap <br><p>(d)</p></button>
 
-                <button class="tab" value="3">Tomb</button>
+                <button class="tab" value="3">Tomb <br><p>(j)</p></button>
 
-                <button class="tab" value="4">OpenHat</button>
+                <button class="tab" value="4">OpenHat <br><p>(k)</p></button>
 
-                <button class="tab" value="5">Hat</button>
+                <button class="tab" value="5">Hat <br><p>(l)</p></button>
             </div>
+
         </div>
     </ul>
 </body>
