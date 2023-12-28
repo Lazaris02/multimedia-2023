@@ -48,13 +48,12 @@ let sample_queue = []; // the ahead-of-time queue the sounds are put in
 
 let control=[];//for sliders
 
-const volumeNode=[];//for maingainnodes
-const reverbNode=[];//for reverbgainNodes
-const panNode=[];//for pangainNodes
-const delayNode=[];//for delayNodes
-const delay=[];//for actual delay (to change the delayTime)
+let volumeNode=[];//for maingainnodes
+let reverbNode=[];//for reverbgainNodes
+let panNode=[];//for pangainNodes
+let delayNode=[];//for delayNodes
+let delay=[];//for actual delay (to change the delayTime)
 let pitch=[];//for assinging values to pitch
-let delayTime=[]//for assigning values to delay time
 
 
 // handles start-stop
@@ -113,7 +112,7 @@ function setupOnClickListeners(){
         if (!e.target.classList.contains('demo')){return}
         clickDemo(e.target.dataset.demoid);
     });
-
+    
     effect_control.addEventListener('change',changeEff,false);
     let gainers=document.querySelectorAll('[class*="gainer"]');
     for(let g of gainers){
@@ -523,6 +522,12 @@ function updateCurrentSample(sound_row, curr_step, add) {
 }
 
 function resetSample(){
+    
+    effect_control.value="volume";
+    
+    changeEff();
+    empty_ranges();
+    initialize_range();
     for(let tile of onList){
         tile.classList.remove('tile-on');
     }
@@ -669,11 +674,12 @@ function initializeRows(){
     console.log("rows and tiles mapped!")
 }
 
-async function initialize_range(){//initialize the nodes needed for the effects, init the control array, connects all gainers to correct nodes 
+function initialize_range(){//initialize the nodes needed for the effects, init the control array, connects all gainers to correct nodes 
     let gainers=document.querySelectorAll('[class*="volumegainer"]');
     let gainNode;
     let delaytemp;
     for(let g of gainers){
+        g.value=0.3;//starting volume
         control.push(g.value);//push sliders
         pitch.push(1);//initialize pitch (default sound)
         gainNode=context.createGain();
@@ -697,7 +703,13 @@ async function initialize_range(){//initialize the nodes needed for the effects,
     console.log("Effect Nodes initialized");
     
 }
-
+function empty_ranges(){
+    volumeNode=[];
+    reverbNode=[];
+    panNode=[];
+    delayNode=[];
+    delay=[];
+}
 function main(){
     initialize_curr_selection();
     initializeRows();
