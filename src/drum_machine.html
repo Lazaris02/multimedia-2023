@@ -7,6 +7,7 @@
     <title>Drum Machine</title>
 
     <link href='http://fonts.googleapis.com/css?family=Ubuntu+Mono|Oleo+Script+Swash+Caps' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
     <link rel="stylesheet" href="style.css">
 
     <script src="app.js" type="module" defer></script>
@@ -27,17 +28,17 @@
                     </div>
                 </label>
                 
-                <button id="play-button" class="func-button">Play</button>
-                <button id="reset-button" class="func-button">Reset</button>
+                <button id="play-button" class="func-button"><span class="material-symbols-rounded">play_arrow</span></button>
+                <button id="reset-button" class="func-button"><span class="material-symbols-rounded">restart_alt</span></button>
                 <button id="setup-context" class="setup-button">Setup</button>
-                <button id="save-button" class="func-button">Save</button>
-                <button id="load-button" class="func-button">Load</button>
+                <button id="save-button" class="func-button"><span class="material-symbols-rounded">download</span></button>
+                <button id="load-button" class="func-button"><span class="material-symbols-rounded">upload</span></button>
                 
                 <select name="kit-drop" id="kit-drop">
-                    <option value="trap/">trap</option>
-                    <option value="techno/">techno</option>
-                    <option value="future/">future</option>
-                    <option value="boombap/">boombap</option>
+                    <option value="trap/" style="background-color: purple;">trap</option>
+                    <option value="techno/" style="background-color: rgb(13, 168, 13);">techno</option>
+                    <option value="future/" style="background-color: rgb(7, 159, 253);">future</option>
+                    <option value="boombap/" style="background-color: rgb(150, 15, 15);"">boombap</option>
                 </select>
 
 
@@ -124,9 +125,8 @@
 
                 </li>
                 <div class="sound-sliders">
-                    <label for="range-1" id="gainerlab"></label>
-                    <input class="volumegainer1 slider" type="range" id="range-1" min="0" max="0.8" step="0.01" 
-                        oninput="rangeValue.innerText = this.value"><p id="rangeValue"></p>
+                    <label for="range-1" id="gainerlab">volume</label>
+                    <input class="volumegainer1 slider" type="range" id="range-1" min="0" max="0.8" step="0.01">
                 </div>
             </div>
 
@@ -164,7 +164,7 @@
 
                 </li>
                 <div class="sound-sliders">
-                    <label for="range-2" id="gainerlab"></label>
+                    <label for="range-2" id="gainerlab">volume</label>
                     <input class="volumegainer2 slider" type="range" id="range-2" min="0" max="0.8" step="0.01">
                 </div>
             </div>
@@ -202,7 +202,7 @@
 
                 </li>
                 <div class="sound-sliders">
-                    <label for="range-3" id="gainerlab"></label>
+                    <label for="range-3" id="gainerlab">volume</label>
                     <input class="volumegainer3 slider" type="range" id="range-3" min="0" max="0.8" step="0.01">
                 </div>
             </div>
@@ -241,7 +241,7 @@
 
                 </li>
                 <div class="sound-sliders">
-                    <label for="range-4" id="gainerlab"></label>
+                    <label for="range-4" id="gainerlab">volume</label>
                     <input class="volumegainer4 slider" type="range" id="range-4" min="0" max="0.8" step="0.01">
                 </div>
             </div>
@@ -281,7 +281,7 @@
 
                 </li>
                 <div class="sound-sliders">
-                    <label for="range-5" id="gainerlab"></label>
+                    <label for="range-5" id="gainerlab">volume</label>
                     <input class="volumegainer5 slider" type="range" id="range-5" min="0" max="0.8" step="0.01">
                 </div>
             </div>
@@ -320,7 +320,7 @@
 
                 </li>
                 <div class="sound-sliders">
-                    <label for="range-6" id="gainerlab"></label>
+                    <label for="range-6" id="gainerlab">volume</label>
                     <input class="volumegainer6 slider" type="range" id="range-6" min="0" max="0.8" step="0.01">
                 </div>
             </div>

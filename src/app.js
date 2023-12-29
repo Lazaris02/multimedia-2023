@@ -3,9 +3,11 @@ import { demoDataList } from './demoData.js';
 //---Get the basic elements of the board
 const board = document.querySelector('#board');
 const tiles = document.querySelectorAll('.tile'); // not used yet
+const sound_names = document.querySelectorAll('.sound-name');
 const sound_rows = document.querySelector('.sound-rows');
 const bar_markers = document.querySelectorAll('.mark-tile');
 const play_button = document.querySelector('#play-button');
+const play_button_icon = document.querySelector(".material-symbols-rounded");
 const reset_button = document.querySelector('#reset-button');
 const setup_context = document.querySelector('#setup-context');
 
@@ -138,6 +140,10 @@ function setupOnClickListeners(){
         }
     });
 
+    for(let name of sound_names){
+        name.addEventListener('click', clickName);
+    }
+
     save_button.addEventListener('click',saveCurrentBoard);
     load_button.addEventListener('click',()=>loadSavedBoard(-1));
 
@@ -168,7 +174,13 @@ function clickTile(e){
     }
 }
 
-
+function clickName(e){
+    if (e.target.className == 'sound-name'){
+    let name_sound = e.target.nextElementSibling;
+    console.log(name_sound);
+    playSound(name_sound.dataset.row);
+    }
+}
 
 function playBoard(e){
     // if play button is clicked change its color
@@ -177,7 +189,13 @@ function playBoard(e){
     e.target.classList.toggle('func-button-on');
     play = !play;
     console.log(play, ' play', typeof play);
-    if (play) {startBoard();}else{stopBoard();}
+    if (play) {
+        startBoard();
+        play_button_icon.innerHTML = "pause";
+    }else{
+        stopBoard();
+        play_button_icon.innerHTML = "play_arrow";
+    }
 }
 
 function startBoard(){
@@ -269,7 +287,7 @@ function changeEff(){//function for changing the effect depending on the user in
     //,set the value of the slider from the effect array so user does not lose his choices and finaly update the control array
     let gainerslabels=document.querySelectorAll('#gainerlab')
     for(let g of gainerslabels){
-        // g.innerHTML=effect_control.value;
+        g.innerHTML=effect_control.value;
     }
     let gainers=document.querySelectorAll('[class*="gainer"]');
     for(let g of gainers){

@@ -62,8 +62,12 @@ ul{
 
 /* --- buttons --- */
 
+.material-symbols-rounded{
+    font-size: 40px;
+}
+
 .func-button{
-    background-color:black;
+    background-color:rgb(28, 26, 26);
     color: white;
     padding: 0.5rem;
     font-weight: 800;
@@ -73,11 +77,18 @@ ul{
     height: 60px;
     font-size: large;
     cursor: pointer;
+    box-shadow: 0px 6px 0px black;
+}
+
+.func-button:active{
+    border: none;
+    box-shadow: none;
+    transform: translate(0px,6px);
 }
 
 .func-button-on{
-    background-color: #8B0000;
-    color: black;
+    /* background-color: #8B0000; */
+    color: white;
     cursor: pointer;
 
 }
@@ -134,6 +145,10 @@ ul{
     margin-top: 12px;
 }
 
+#effect_drop{
+    background-color: black;
+}
+
 /* --- tile-rows --- */
 
 .row{
@@ -165,6 +180,7 @@ ul{
 
 .tile{
     cursor: pointer;
+    box-shadow: inset 5px 5px 5px  rgba(0,0,0,0.5);
 }
 
 .num{
@@ -189,11 +205,16 @@ ul{
     align-self: center;
     font-size: larger;
     width: 50px;
+    cursor: pointer;
+}
+
+.sound-name:active{
+    font-size: 20px;
+    font-weight: 800;
 }
 
 
 .bar-marker{
-    /* change this when I team everything in a grid */
     margin-left: 50px;
 }
 
