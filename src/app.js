@@ -48,13 +48,12 @@ let sample_queue = []; // the ahead-of-time queue the sounds are put in
 
 let control=[];//for sliders
 
-const volumeNode=[];//for maingainnodes
-const reverbNode=[];//for reverbgainNodes
-const panNode=[];//for pangainNodes
-const delayNode=[];//for delayNodes
-const delay=[];//for actual delay (to change the delayTime)
+let volumeNode=[];//for maingainnodes
+let reverbNode=[];//for reverbgainNodes
+let panNode=[];//for pangainNodes
+let delayNode=[];//for delayNodes
+let delay=[];//for actual delay (to change the delayTime)
 let pitch=[];//for assinging values to pitch
-let delayTime=[]//for assigning values to delay time
 
 
 // handles start-stop
@@ -113,7 +112,7 @@ function setupOnClickListeners(){
         if (!e.target.classList.contains('demo')){return}
         clickDemo(e.target.dataset.demoid);
     });
-
+    
     effect_control.addEventListener('change',changeEff,false);
     let gainers=document.querySelectorAll('[class*="gainer"]');
     for(let g of gainers){
@@ -283,7 +282,7 @@ function changeEff(){//function for changing the effect depending on the user in
     if(gainers[0].className.startsWith('reverb')){
         for(let g of gainers){
             g.min=0;
-            g.max=5;
+            g.max=3;
             g.step=0.1;
             g.value=reverbNode[parseInt(g.id.slice(-1))-1].gain.value;
             control[parseInt(g.id.slice(-1))-1]=g.value;
@@ -416,10 +415,10 @@ function unpressTab(e){
 }
 
 function clickDemo(demoNum){
-    //also needs to edit the sliders values
     changeKit(demoList[demoNum]["kit"]);
     bpmEdit(undefined,true,demoList[demoNum]["bpm_value"]);
     loadSavedBoard(demoNum);  
+    sliderEdit(demoList[demoNum]["effectvals"]);
 }
 // -- other functions --
 
@@ -523,6 +522,12 @@ function updateCurrentSample(sound_row, curr_step, add) {
 }
 
 function resetSample(){
+    
+    effect_control.value="volume";
+    
+    changeEff();
+    empty_ranges();
+    initialize_range();
     for(let tile of onList){
         tile.classList.remove('tile-on');
     }
@@ -574,8 +579,41 @@ function bpmEdit(input_clicked=undefined,isDemo=false,demoValue=0){
     bpm_range.value = tempo;
 
     animationWorker.postMessage(["change",calculateSoundDelay()]);
-
 }
+function sliderEdit(eff){
+    let i=0
+    for (let v of volumeNode){
+        v.gain.value=eff[0][i]
+        i++
+    }
+    i=0
+    for (let r of reverbNode){
+        r.gain.value=eff[1][i]
+        i++
+    }
+    i=0
+    for (let p of pitch){
+        pitch[i]=eff[3][i]
+        i++
+    }
+    i=0
+    for (let d of delayNode){
+        d.gain.value=eff[4][i]
+        i++
+    }
+    i=0
+    for (let p of panNode){
+        p.pan.value=eff[2][i]
+        i++
+    }
+    i=0
+    for (let dt of delay){
+        dt.delayTime.value=eff[5][i]
+        i++
+    }
+    changeEff();
+}
+
 
 
 
@@ -613,10 +651,7 @@ function initializeDemos(){
     for(let i = 1; i <= NumOfDemos; i++){
         demoList[i] = {};
         demoTilesArray = translateTileArray(demoDataList[i]["demoNotes"]);
-        //needs to translate the effects
-        //needs to add the bpm 
-        //needs to change the kit
-        //needs to change the bpm
+        demoList[i]["effectvals"]=demoDataList[i]["effect_values"];
         demoList[i]["demoNotes"] = demoTilesArray;
         demoList[i]["bpm_value"] = demoDataList[i]["bpm_value"];
         demoList[i]["kit"] = demoDataList[i]["kit"];
@@ -669,11 +704,12 @@ function initializeRows(){
     console.log("rows and tiles mapped!")
 }
 
-async function initialize_range(){//initialize the nodes needed for the effects, init the control array, connects all gainers to correct nodes 
+function initialize_range(){//initialize the nodes needed for the effects, init the control array, connects all gainers to correct nodes 
     let gainers=document.querySelectorAll('[class*="volumegainer"]');
     let gainNode;
     let delaytemp;
     for(let g of gainers){
+        g.value=0.3;//starting volume
         control.push(g.value);//push sliders
         pitch.push(1);//initialize pitch (default sound)
         gainNode=context.createGain();
@@ -694,10 +730,17 @@ async function initialize_range(){//initialize the nodes needed for the effects,
         delayNode.push(gainNode);//push gain node
         delay.push(delaytemp);
     }
+    changeEff();
     console.log("Effect Nodes initialized");
     
 }
-
+function empty_ranges(){
+    volumeNode=[];
+    reverbNode=[];
+    panNode=[];
+    delayNode=[];
+    delay=[];
+}
 function main(){
     initialize_curr_selection();
     initializeRows();
