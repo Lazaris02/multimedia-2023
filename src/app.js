@@ -282,7 +282,7 @@ function changeEff(){//function for changing the effect depending on the user in
     if(gainers[0].className.startsWith('reverb')){
         for(let g of gainers){
             g.min=0;
-            g.max=5;
+            g.max=3;
             g.step=0.1;
             g.value=reverbNode[parseInt(g.id.slice(-1))-1].gain.value;
             control[parseInt(g.id.slice(-1))-1]=g.value;
@@ -415,10 +415,10 @@ function unpressTab(e){
 }
 
 function clickDemo(demoNum){
-    //also needs to edit the sliders values
     changeKit(demoList[demoNum]["kit"]);
     bpmEdit(undefined,true,demoList[demoNum]["bpm_value"]);
     loadSavedBoard(demoNum);  
+    sliderEdit(demoList[demoNum]["effectvals"]);
 }
 // -- other functions --
 
@@ -579,8 +579,41 @@ function bpmEdit(input_clicked=undefined,isDemo=false,demoValue=0){
     bpm_range.value = tempo;
 
     animationWorker.postMessage(["change",calculateSoundDelay()]);
-
 }
+function sliderEdit(eff){
+    let i=0
+    for (let v of volumeNode){
+        v.gain.value=eff[0][i]
+        i++
+    }
+    i=0
+    for (let r of reverbNode){
+        r.gain.value=eff[1][i]
+        i++
+    }
+    i=0
+    for (let p of pitch){
+        pitch[i]=eff[3][i]
+        i++
+    }
+    i=0
+    for (let d of delayNode){
+        d.gain.value=eff[4][i]
+        i++
+    }
+    i=0
+    for (let p of panNode){
+        p.pan.value=eff[2][i]
+        i++
+    }
+    i=0
+    for (let dt of delay){
+        dt.delayTime.value=eff[5][i]
+        i++
+    }
+    changeEff();
+}
+
 
 
 
@@ -618,10 +651,7 @@ function initializeDemos(){
     for(let i = 1; i <= NumOfDemos; i++){
         demoList[i] = {};
         demoTilesArray = translateTileArray(demoDataList[i]["demoNotes"]);
-        //needs to translate the effects
-        //needs to add the bpm 
-        //needs to change the kit
-        //needs to change the bpm
+        demoList[i]["effectvals"]=demoDataList[i]["effect_values"];
         demoList[i]["demoNotes"] = demoTilesArray;
         demoList[i]["bpm_value"] = demoDataList[i]["bpm_value"];
         demoList[i]["kit"] = demoDataList[i]["kit"];
@@ -700,6 +730,7 @@ function initialize_range(){//initialize the nodes needed for the effects, init 
         delayNode.push(gainNode);//push gain node
         delay.push(delaytemp);
     }
+    changeEff();
     console.log("Effect Nodes initialized");
     
 }
