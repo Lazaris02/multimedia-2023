@@ -175,6 +175,7 @@ function clickTile(e){
 }
 
 function clickName(e){
+    //function for when the user clicks the name of a sound, the sound is being played
     if (e.target.className == 'sound-name'){
     let name_sound = e.target.nextElementSibling;
     console.log(name_sound);
@@ -352,6 +353,7 @@ function changeEff(){//function for changing the effect depending on the user in
 function changeKit(demoValue){
     //function for changing the sound kits depending on the user input
     let selected_kit = (demoValue == -1) ? kit_drop.value : kit_type[demoValue];
+
     if (selected_kit == 'trap/'){
         current_kit = kit_type[0];
     }
@@ -367,6 +369,11 @@ function changeKit(demoValue){
 
     kit_drop.value = selected_kit;
 
+    let selected_color = (kit_drop.options[kit_drop.selectedIndex]).style.backgroundColor;
+    kit_drop.style.backgroundColor = selected_color; //changes the background color of the kits' dropdown
+    for(let name of sound_names){
+        name.style.textShadow = `2px 2px 5px ${selected_color}`;
+    }
 }
 
 function clickTab(e){
@@ -460,7 +467,6 @@ function bar_animation(){
     bar_markers[curr_tile].classList.add('animate-tile');
     bar_markers[prev_tile].classList.remove('animate-tile');
 }
-
 
 
 function resetBarTracker(){
@@ -721,6 +727,12 @@ async function initialize_range(){//initialize the nodes needed for the effects,
     }
     console.log("Effect Nodes initialized");
     
+}
+
+function changeKitColor(){
+    if (target.id == 'kit-drop'){
+        console.log('you clicked the kit drop down');
+    }
 }
 
 function main(){

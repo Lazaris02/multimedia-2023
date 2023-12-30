@@ -145,8 +145,8 @@ ul{
     margin-top: 12px;
 }
 
-#effect_drop{
-    background-color: black;
+#kit-drop{
+    background-color: orange;
 }
 
 /* --- tile-rows --- */
@@ -206,6 +206,7 @@ ul{
     font-size: larger;
     width: 50px;
     cursor: pointer;
+    text-shadow: 2px 2px 5px orange;
 }
 
 .sound-name:active{
