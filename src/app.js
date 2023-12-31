@@ -3,9 +3,11 @@ import { demoDataList } from './demoData.js';
 //---Get the basic elements of the board
 const board = document.querySelector('#board');
 const tiles = document.querySelectorAll('.tile'); // not used yet
+const sound_names = document.querySelectorAll('.sound-name');
 const sound_rows = document.querySelector('.sound-rows');
 const bar_markers = document.querySelectorAll('.mark-tile');
 const play_button = document.querySelector('#play-button');
+const play_button_icon = document.querySelector(".material-symbols-rounded");
 const reset_button = document.querySelector('#reset-button');
 const setup_context = document.querySelector('#setup-context');
 
@@ -90,7 +92,11 @@ const rows = {}; // access to a row gives us access to its respective tiles
 
 setup_context.addEventListener('click',(e)=>{
     //the gesture needed for the app to properly setup
-    
+    // e.target.classList.toggle('switch-on');
+
+    console.log("im here!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+    console.log(e.target.classList);
+
     if(context === undefined){
         context = new AudioContext();
     }
@@ -133,6 +139,10 @@ function setupOnClickListeners(){
         }
     });
 
+    for(let name of sound_names){
+        name.addEventListener('click', clickName);
+    }
+
     save_button.addEventListener('click',saveCurrentBoard);
     load_button.addEventListener('click',()=>loadSavedBoard(-1));
 
@@ -163,7 +173,14 @@ function clickTile(e){
     }
 }
 
-
+function clickName(e){
+    //function for when the user clicks the name of a sound, the sound is being played
+    if (e.target.className == 'sound-name'){
+    let name_sound = e.target.nextElementSibling;
+    console.log(name_sound);
+    playSound(name_sound.dataset.row);
+    }
+}
 
 function playBoard(e){
     // if play button is clicked change its color
@@ -172,7 +189,13 @@ function playBoard(e){
     e.target.classList.toggle('func-button-on');
     play = !play;
     console.log(play, ' play', typeof play);
-    if (play) {startBoard();}else{stopBoard();}
+    if (play) {
+        startBoard();
+        play_button_icon.innerHTML = "pause";
+    }else{
+        stopBoard();
+        play_button_icon.innerHTML = "play_arrow";
+    }
 }
 
 function startBoard(){
@@ -329,6 +352,7 @@ function changeEff(){//function for changing the effect depending on the user in
 function changeKit(demoValue){
     //function for changing the sound kits depending on the user input
     let selected_kit = (demoValue == -1) ? kit_drop.value : kit_type[demoValue];
+
     if (selected_kit == 'trap/'){
         current_kit = kit_type[0];
     }
@@ -344,6 +368,11 @@ function changeKit(demoValue){
 
     kit_drop.value = selected_kit;
 
+    let selected_color = (kit_drop.options[kit_drop.selectedIndex]).style.backgroundColor;
+    kit_drop.style.backgroundColor = selected_color; //changes the background color of the kits' dropdown
+    for(let name of sound_names){
+        name.style.textShadow = `2px 2px 5px ${selected_color}`;
+    }
 }
 
 function clickTab(e){
@@ -356,10 +385,12 @@ function clickTab(e){
 
 function pressTab(e){
     //function for playing the sounds when some specific keys of the keyboard are pressed
+    console.log("you pressed a tab");
     if (context === undefined){
         return;
     }
     let key = e.key;
+    let pos;
 
     if (key == 'a'){
         pos = 0;
@@ -388,6 +419,7 @@ function pressTab(e){
 function unpressTab(e){
     //function for the effect of unpressing the tabs
     let key = e.key;
+    let pos;
 
     if (key == 'a'){
         pos = 0;
@@ -434,7 +466,6 @@ function bar_animation(){
     bar_markers[curr_tile].classList.add('animate-tile');
     bar_markers[prev_tile].classList.remove('animate-tile');
 }
-
 
 
 function resetBarTracker(){
@@ -734,6 +765,15 @@ function initialize_range(){//initialize the nodes needed for the effects, init 
     console.log("Effect Nodes initialized");
     
 }
+
+
+function changeKitColor(){
+    if (target.id == 'kit-drop'){
+        console.log('you clicked the kit drop down');
+    }
+}
+
+
 function empty_ranges(){
     volumeNode=[];
     reverbNode=[];
@@ -741,6 +781,7 @@ function empty_ranges(){
     delayNode=[];
     delay=[];
 }
+
 function main(){
     initialize_curr_selection();
     initializeRows();
