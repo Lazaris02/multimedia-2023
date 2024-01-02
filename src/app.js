@@ -76,7 +76,7 @@ let currSample = {};
 let onList = []; //keeps track of the on-tiles that need to be reset in some cases.
 let demoList = {}; // an object that will store a demoID as a key and a demo array as value
 let tempSave;
-
+let savedSliders=[];//for saving the effect values on save button 
 
 const bpm_step = 5;
 const temp_max = parseInt(bpm_text.max);
@@ -142,11 +142,8 @@ function setupOnClickListeners(){
     for(let name of sound_names){
         name.addEventListener('click', clickName);
     }
-
     save_button.addEventListener('click',saveCurrentBoard);
     load_button.addEventListener('click',()=>loadSavedBoard(-1));
-
-
 }
 
 function clickTile(e){
@@ -227,6 +224,39 @@ function saveCurrentBoard(){
     //if the user wants to save their temporary board only if not playing
     if(play){return}
     tempSave = [...onList]; // copies the current board
+    savedSliders=[]
+    let temp=[]
+    for(let s of volumeNode){
+        temp.push(s.gain.value)
+    }
+    savedSliders.push(temp)
+    temp=[]
+    for (let s of reverbNode){
+        temp.push(s.gain.value)
+    }
+    savedSliders.push(temp)
+    temp=[]
+    for (let p of panNode){
+        temp.push(p.pan.value)
+    }
+    savedSliders.push(temp)
+    temp=[]
+    let i=0;
+    for (let p of pitch){
+        temp.push(pitch[i])
+        i++
+    }
+    savedSliders.push(temp)
+    temp=[]
+    for (let d of delayNode){
+        temp.push(d.gain.value)
+    }
+    savedSliders.push(temp)
+    temp=[]
+    for (let dt of delay){
+        temp.push(dt.delayTime.value)
+    }
+    savedSliders.push(temp)
 }
 
 function loadSavedBoard(demoNum){
@@ -251,6 +281,9 @@ function loadSavedBoard(demoNum){
         updateCurrentSample(sound_row, curr_step, true);
     }
     onList = [...toLoad];
+    if(demoNum==-1){
+        sliderEdit(savedSliders)
+    }
     //probably also needs to load bpm etc.
 }
 
