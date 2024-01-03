@@ -9,7 +9,7 @@ const bar_markers = document.querySelectorAll('.mark-tile');
 const play_button = document.querySelector('#play-button');
 const play_button_icon = document.querySelector(".material-symbols-rounded");
 const reset_button = document.querySelector('#reset-button');
-const setup_context = document.querySelector('#setup-context');
+const setup_context = document.getElementById('onoff');
 
 const effect_control=document.querySelector('#effect_drop');
 
@@ -86,24 +86,29 @@ const NumOfDemos = 5;
 
 const rows = {}; // access to a row gives us access to its respective tiles
 
+let power = false; // flag for the switch element
+let firstTime = true; // flag for the first time that we start the machine in order to set the AudioContext
+
 // -- event-listeners + their functions --
 
 
-
-setup_context.addEventListener('click',(e)=>{
-    //the gesture needed for the app to properly setup
-    // e.target.classList.toggle('switch-on');
-
-    console.log("im here!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-    console.log(e.target.classList);
-
-    if(context === undefined){
-        context = new AudioContext();
+setup_context.addEventListener('change', function() {
+    //the gesture needed for the app to properly setup whenever the machine is on or off
+    if (setup_context.checked){
+        if (firstTime){
+            context = new AudioContext();
+            firstTime = false;
+        }
+        power = true;
+        main();
+        console.log('im on !!!!!!!!!!!!!!!!!!');
     }
-    main();
-    setup_context.remove();
+    else{
+        console.log('im off !!!!!!!!!!!!!!!!!');
+        power = false;
+        resetSample();
+    }
 })
-
 
 function setupOnClickListeners(){
     sound_rows.addEventListener('click',clickTile);
@@ -151,6 +156,11 @@ function clickTile(e){
     // 1. it changes color 2. I toggle its status on the board matrix
     // 3. I need to add the respective sound + position in the sample
     // so that it can be played when we press play
+    if (power === false){
+        //condition if the machine is off
+        return;
+    }
+
     if (e.target.classList.contains('tile')) {
         e.target.classList.toggle('tile-on');
         const temp_parent = e.target.parentElement;
@@ -172,6 +182,11 @@ function clickTile(e){
 
 function clickName(e){
     //function for when the user clicks the name of a sound, the sound is being played
+    if (power === false){
+        //condition if the machine is off
+        return;
+    }
+
     if (e.target.className == 'sound-name'){
     let name_sound = e.target.nextElementSibling;
     console.log(name_sound);
@@ -183,6 +198,11 @@ function playBoard(e){
     // if play button is clicked change its color
     //also change the play-state and depending on where 
     //we land we trigger the start/stopBoard()
+    if (power === false){
+        //condition if the machine is off
+        return;
+    }
+
     e.target.classList.toggle('func-button-on');
     play = !play;
     console.log(play, ' play', typeof play);
@@ -384,6 +404,7 @@ function changeEff(){//function for changing the effect depending on the user in
 
 function changeKit(demoValue){
     //function for changing the sound kits depending on the user input
+
     let selected_kit = (demoValue == -1) ? kit_drop.value : kit_type[demoValue];
 
     if (selected_kit == 'trap/'){
@@ -406,10 +427,17 @@ function changeKit(demoValue){
     for(let name of sound_names){
         name.style.textShadow = `2px 2px 5px ${selected_color}`;
     }
+
+    resetSample();
 }
 
 function clickTab(e){
     //function for playing the appropriate sound when the user clicks on a tab
+    if (power === false){
+        //condition if the machine is off
+        return;
+    }
+
     if (e.target.className == 'tab'){
         const position = e.target.value;
         playSound(position);
@@ -418,7 +446,11 @@ function clickTab(e){
 
 function pressTab(e){
     //function for playing the sounds when some specific keys of the keyboard are pressed
-    console.log("you pressed a tab");
+    if (power === false){
+        //condition if the machine is off
+        return;
+    }
+    
     if (context === undefined){
         return;
     }
@@ -451,6 +483,12 @@ function pressTab(e){
 
 function unpressTab(e){
     //function for the effect of unpressing the tabs
+
+    if (power === false){
+        //condition if the machine is off
+        return;
+    }
+
     let key = e.key;
     let pos;
 
@@ -480,6 +518,11 @@ function unpressTab(e){
 }
 
 function clickDemo(demoNum){
+    if (power === false){
+        //condition if the machine is off
+        return;
+    }
+
     changeKit(demoList[demoNum]["kit"]);
     bpmEdit(undefined,true,demoList[demoNum]["bpm_value"]);
     loadSavedBoard(demoNum);  
