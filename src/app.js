@@ -59,6 +59,7 @@ let pitch=[];//for assinging values to pitch
 
 
 // handles start-stop
+let boardOn = false;
 let play = false;
 let play_interval; //not used yet
 
@@ -76,6 +77,8 @@ let currSample = {};
 let onList = []; //keeps track of the on-tiles that need to be reset in some cases.
 let demoList = {}; // an object that will store a demoID as a key and a demo array as value
 let tempSave;
+let tempBpm;
+let tempKit;
 let savedSliders=[];//for saving the effect values on save button 
 
 const bpm_step = 5;
@@ -94,9 +97,6 @@ setup_context.addEventListener('click',(e)=>{
     //the gesture needed for the app to properly setup
     // e.target.classList.toggle('switch-on');
 
-    console.log("im here!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-    console.log(e.target.classList);
-
     if(context === undefined){
         context = new AudioContext();
     }
@@ -108,14 +108,16 @@ setup_context.addEventListener('click',(e)=>{
 function setupOnClickListeners(){
     sound_rows.addEventListener('click',clickTile);
     play_button.addEventListener('click',playBoard);
-    reset_button.addEventListener('click',resetSample);
-
+    reset_button.addEventListener('click',()=>{
+        resetSample();
+        if(play){stopBoard();}
+    });
     tabs.addEventListener('click', clickTab);
     body.addEventListener('keydown',pressTab);
     body.addEventListener('keyup', unpressTab);
     kit_drop.addEventListener('change',()=> changeKit(-1));
     demos.addEventListener('click',(e)=>{
-        if (!e.target.classList.contains('demo')){return}
+        if (!e.target.classList.contains('demo') || play){return}
         clickDemo(e.target.dataset.demoid);
     });
     
@@ -142,8 +144,14 @@ function setupOnClickListeners(){
     for(let name of sound_names){
         name.addEventListener('click', clickName);
     }
-    save_button.addEventListener('click',saveCurrentBoard);
-    load_button.addEventListener('click',()=>loadSavedBoard(-1));
+    save_button.addEventListener('click',()=>{
+        if(play){return}
+        saveCurrentBoard();
+    });
+    load_button.addEventListener('click',()=>{
+        if(play){return}
+        loadSavedBoard(-1)
+    });
 }
 
 function clickTile(e){
@@ -183,15 +191,11 @@ function playBoard(e){
     // if play button is clicked change its color
     //also change the play-state and depending on where 
     //we land we trigger the start/stopBoard()
-    e.target.classList.toggle('func-button-on');
     play = !play;
-    console.log(play, ' play', typeof play);
     if (play) {
         startBoard();
-        play_button_icon.innerHTML = "pause";
     }else{
         stopBoard();
-        play_button_icon.innerHTML = "play_arrow";
     }
 }
 
@@ -199,6 +203,8 @@ function startBoard(){
     //performs all the necessary actions for the 
     //board to start playing (from the beggining of the board)
     //can be called from play board or bpm-eventListener
+    play_button.classList.add('func-button-on');
+    play_button_icon.innerHTML = "pause";
     play = true;
     bar_iterator = 0;
     bar_animator = -1;
@@ -213,6 +219,8 @@ function stopBoard(){
     //performs all the necessary actions for the 
     //board to stop playing
     //can be called from play board or bpm-eventListener
+    play_button.classList.remove('func-button-on');
+    play_button_icon.innerHTML = "play_arrow";
     play=false;
     timeManager.postMessage('stop');
     animationWorker.postMessage('stop');
@@ -222,10 +230,15 @@ function stopBoard(){
 
 function saveCurrentBoard(){
     //if the user wants to save their temporary board only if not playing
-    if(play){return}
+
     tempSave = [...onList]; // copies the current board
+    tempBpm = parseInt(bpm_range.value);
+    tempKit = current_kit;
+    console.log(tempBpm,tempKit,'here')
+
     savedSliders=[]
     let temp=[]
+
     for(let s of volumeNode){
         temp.push(s.gain.value)
     }
@@ -263,15 +276,19 @@ function loadSavedBoard(demoNum){
     //demonumber : -1 if not for the demo 1...max_num for each demo 
     //can't be loaded while playing
     //if not playing just load every tile in the tempSave
-    if(play){return}
     //first reset the current sample
     resetSample();
-    //then just load the demo or current-save into the sample 
+    if(demoNum==-1){
+        sliderEdit(savedSliders);
+        changeKit(kit_type.indexOf(tempKit));
+        bpmEdit(undefined,true,tempBpm);
+    }
+
     let parent;
     let sound_row;
     let curr_step;
     const toLoad = (demoNum == -1) ? tempSave : demoList[demoNum]["demoNotes"];
-    console.log(toLoad)
+    
     for(let tile of toLoad){
         console.log(tile)
         parent = tile.parentElement.parentElement;
@@ -281,10 +298,6 @@ function loadSavedBoard(demoNum){
         updateCurrentSample(sound_row, curr_step, true);
     }
     onList = [...toLoad];
-    if(demoNum==-1){
-        sliderEdit(savedSliders)
-    }
-    //probably also needs to load bpm etc.
 }
 
 function changeGain(e) {//function for changing control value on user input
@@ -588,7 +601,7 @@ function updateCurrentSample(sound_row, curr_step, add) {
 function resetSample(){
     
     effect_control.value="volume";
-    
+    bpmEdit(undefined,true,100);
     changeEff();
     empty_ranges();
     initialize_range();
