@@ -59,7 +59,7 @@ let pitch=[];//for assinging values to pitch
 
 
 // handles start-stop
-let boardOn = false;
+let boardOn = false; //handles the on-off board button
 let play = false;
 let play_interval; //not used yet
 
@@ -93,15 +93,12 @@ const rows = {}; // access to a row gives us access to its respective tiles
 
 
 
-setup_context.addEventListener('click',(e)=>{
+setup_context.addEventListener('click',()=>{
     //the gesture needed for the app to properly setup
-    // e.target.classList.toggle('switch-on');
-
-    if(context === undefined){
-        context = new AudioContext();
-    }
+    if(boardOn){return}
+    boardOn = true;
+    context = new AudioContext();
     main();
-    setup_context.remove();
 })
 
 
