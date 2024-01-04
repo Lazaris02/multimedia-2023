@@ -112,7 +112,10 @@ function setupOnClickListeners(){
     tabs.addEventListener('click', clickTab);
     body.addEventListener('keydown',pressTab);
     body.addEventListener('keyup', unpressTab);
-    kit_drop.addEventListener('change',()=> changeKit(-1));
+    kit_drop.addEventListener('change',()=> {
+        resetSample();
+        changeKit(-1);
+    });
     demos.addEventListener('click',(e)=>{
         if (!e.target.classList.contains('demo') || play){return}
         clickDemo(e.target.dataset.demoid);
