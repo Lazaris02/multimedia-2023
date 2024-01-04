@@ -9,7 +9,6 @@ const bar_markers = document.querySelectorAll('.mark-tile');
 const play_button = document.querySelector('#play-button');
 const play_button_icon = document.querySelector(".material-symbols-rounded");
 const reset_button = document.querySelector('#reset-button');
-const setup_context = document.querySelector('#setup-context');
 
 const effect_control=document.querySelector('#effect_drop');
 
@@ -23,6 +22,7 @@ const bpm_text = document.querySelector('#bpm-text');
 const bpm_range = document.querySelector('#bpm-range');
 const save_button = document.querySelector('#save-button');
 const load_button = document.querySelector('#load-button');
+const on_off = document.querySelector('#onoff');
 
 let context;
 let timeManager; // the worker that manages the sound-queue
@@ -93,7 +93,7 @@ const rows = {}; // access to a row gives us access to its respective tiles
 
 
 
-setup_context.addEventListener('click',()=>{
+on_off.addEventListener('click',()=>{
     //the gesture needed for the app to properly setup
     if(boardOn){return}
     boardOn = true;
