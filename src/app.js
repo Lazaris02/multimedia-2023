@@ -121,6 +121,7 @@ function setupOnClickListeners(){
     body.addEventListener('keydown',pressTab);
     body.addEventListener('keyup', unpressTab);
     kit_drop.addEventListener('change',()=> {
+        resetSliders();
         resetSample();
         changeKit(-1);
     });
