@@ -115,7 +115,7 @@ ul{
     padding-left: 150px;
 }
 
-.demo{
+.demo, #reset-sliders{
     height: 65px;
     width: 65px;
     border-radius: 50%;
@@ -127,10 +127,16 @@ ul{
     box-shadow: 3px 6px 0px #a24401;
 }
 
-.demo:active{
+.demo:active, #reset-sliders:active{
     border: none;
     box-shadow: none;
     transform: translate(0px,6px);
+}
+
+#reset-sliders{
+    margin-left: 150px;
+    background-color: #0c811c;
+    box-shadow: 3px 6px 0px #065210;
 }
 
 /* --- drop downs --- */
@@ -147,6 +153,10 @@ ul{
 
 #kit-drop{
     background-color: orange;
+}
+
+.unclickable{
+    pointer-events: none;
 }
 
 /* --- tile-rows --- */
