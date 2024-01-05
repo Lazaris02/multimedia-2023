@@ -33,7 +33,7 @@
                 <button id="save-button" class="func-button"><span class="material-symbols-rounded">download</span></button>
                 <button id="load-button" class="func-button"><span class="material-symbols-rounded">upload</span></button>
                 
-                <select name="kit-drop" id="kit-drop">
+                <select name="kit-drop" id="kit-drop" class="unclickable">
                     <option value="trap/" style="background-color: orange;">trap</option>
                     <option value="techno/" style="background-color: rgb(13, 168, 13);">techno</option>
                     <option value="future/" style="background-color: rgb(7, 159, 253);">future</option>
@@ -41,7 +41,7 @@
                 </select>
 
 
-                <select name="effect_drop" id="effect_drop">
+                <select name="effect_drop" id="effect_drop" class="unclickable">
                     <option value="volume">volume</option>
                     <option value="reverb">reverb</option>
                     <option value="pan">pan</option>
@@ -365,6 +365,8 @@
                 <button class="demo" value="2" data-demoid="3">D3</button>
                 <button class="demo" value="3" data-demoid="4">D4</button>
                 <button class="demo" value="4" data-demoid="5">D5</button>
+
+                <button id="reset-sliders"><span class="material-symbols-rounded">restart_alt</span></button>
             </div>
 
 

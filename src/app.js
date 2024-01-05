@@ -9,6 +9,7 @@ const bar_markers = document.querySelectorAll('.mark-tile');
 const play_button = document.querySelector('#play-button');
 const play_button_icon = document.querySelector(".material-symbols-rounded");
 const reset_button = document.querySelector('#reset-button');
+const reset_sliders = document.querySelector('#reset-sliders');
 
 const effect_control=document.querySelector('#effect_drop');
 
@@ -97,6 +98,9 @@ on_off.addEventListener('click',()=>{
     //the gesture needed for the app to properly setup
     if(boardOn){return}
     boardOn = true;
+    kit_drop.classList.remove('unclickable');
+    effect_control.classList.remove('unclickable');
+    on_off.disabled = true;
     context = new AudioContext();
     main();
 })
@@ -107,6 +111,10 @@ function setupOnClickListeners(){
     play_button.addEventListener('click',playBoard);
     reset_button.addEventListener('click',()=>{
         resetSample();
+        if(play){stopBoard();}
+    });
+    reset_sliders.addEventListener('click',()=>{
+        resetSliders();
         if(play){stopBoard();}
     });
     tabs.addEventListener('click', clickTab);
@@ -600,11 +608,6 @@ function updateCurrentSample(sound_row, curr_step, add) {
 
 function resetSample(){
     
-    effect_control.value="volume";
-    bpmEdit(undefined,true,100);
-    changeEff();
-    empty_ranges();
-    initialize_range();
     for(let tile of onList){
         tile.classList.remove('tile-on');
     }
@@ -612,6 +615,15 @@ function resetSample(){
         currSample[key] = Array(sound_num).fill(0);
     }
     onList = [];
+}
+
+function resetSliders(){
+    //function for reseting the effect's sliders and the bpm slider
+    effect_control.value="volume";
+    bpmEdit(undefined,true,100);
+    changeEff();
+    empty_ranges();
+    initialize_range();
 }
 
 
