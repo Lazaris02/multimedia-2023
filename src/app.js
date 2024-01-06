@@ -100,6 +100,7 @@ on_off.addEventListener('click',()=>{
     boardOn = true;
     kit_drop.classList.remove('unclickable');
     effect_control.classList.remove('unclickable');
+    bpm_range.classList.remove('unclickable');
     on_off.disabled = true;
     context = new AudioContext();
     main();
