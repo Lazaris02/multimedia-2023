@@ -826,14 +826,6 @@ function initialize_range(){//initialize the nodes needed for the effects, init 
     
 }
 
-
-function changeKitColor(){
-    if (target.id == 'kit-drop'){
-        console.log('you clicked the kit drop down');
-    }
-}
-
-
 function empty_ranges(){
     volumeNode=[];
     reverbNode=[];
