@@ -1,8 +1,8 @@
 import { demoDataList } from './demoData.js';
 
 //---Get the basic elements of the board
-const board = document.querySelector('#board');
-const tiles = document.querySelectorAll('.tile'); // not used yet
+
+const tiles = document.querySelectorAll('.tile'); 
 const sound_names = document.querySelectorAll('.sound-name');
 const sound_rows = document.querySelector('.sound-rows');
 const bar_markers = document.querySelectorAll('.mark-tile');
@@ -10,20 +10,19 @@ const play_button = document.querySelector('#play-button');
 const play_button_icon = document.querySelector(".material-symbols-rounded");
 const reset_button = document.querySelector('#reset-button');
 const reset_sliders = document.querySelector('#reset-sliders');
-
 const effect_control=document.querySelector('#effect_drop');
-
 const kit_drop = document.querySelector('#kit-drop');
 const tabs = document.querySelector('#tabs');
 const demos = document.querySelector('#demos');
 const body = document.querySelector('body');
-
 const bpm_area = document.querySelector('#bpm-area');
 const bpm_text = document.querySelector('#bpm-text');
 const bpm_range = document.querySelector('#bpm-range');
 const save_button = document.querySelector('#save-button');
 const load_button = document.querySelector('#load-button');
 const on_off = document.querySelector('#onoff');
+
+
 
 let context;
 let timeManager; // the worker that manages the sound-queue
@@ -36,7 +35,7 @@ const fileNames = ['kick.wav', 'snare.wav','clap.wav', 'tomb.wav','openhat.wav',
 const kit_collection = {}; //will contain the sounds.
 
 
-const max_tiles = 16; //todo if we add a tile add/reduce then this needs to become a variable not a const 
+const max_tiles = 16;
 const sound_num = 6;
 let tempo  = 100; // our base tempo
 const time_signature = 4; // beats per bar
@@ -48,9 +47,7 @@ let next_bar_time = 0.0; // the time that the next set of sounds will be schedul
 
 
 let sample_queue = []; // the ahead-of-time queue the sounds are put in
-
 let control=[];//for sliders
-
 let volumeNode=[];//for maingainnodes
 let reverbNode=[];//for reverbgainNodes
 let panNode=[];//for pangainNodes
@@ -62,9 +59,6 @@ let pitch=[];//for assinging values to pitch
 // handles start-stop
 let boardOn = false; //handles the on-off board button
 let play = false;
-let play_interval; //not used yet
-
-let animation_interval; // not used yet
 let bar_animator = 0; //keeps track of the step that should be animated
 
 
@@ -73,8 +67,10 @@ let bar_animator = 0; //keeps track of the step that should be animated
 // it is an object with 16 keys - 1 for each time
 // we add the sounds to be played in the respective key
 // for example currSample[0] contains all the sounds to be played
-// in the first column of the kit (maximum 8 sounds)
+// in the first column of the kit (maximum 6 sounds)
 let currSample = {};
+
+
 let onList = []; //keeps track of the on-tiles that need to be reset in some cases.
 let demoList = {}; // an object that will store a demoID as a key and a demo array as value
 let tempSave;
@@ -82,18 +78,16 @@ let tempBpm;
 let tempKit;
 let savedSliders=[];//for saving the effect values on save button 
 
-const bpm_step = 5;
-const temp_max = parseInt(bpm_text.max);
-const temp_min = parseInt(bpm_text.min);
+
+const temp_max = parseInt(bpm_text.max); //the max allowed bpm
+const temp_min = parseInt(bpm_text.min); //the min allowed bpm
 
 const NumOfDemos = 5;
 
 const rows = {}; // access to a row gives us access to its respective tiles
 
-// -- event-listeners + their functions --
 
-
-
+//on-off onclick listener , inits the board
 on_off.addEventListener('click',()=>{
     //the gesture needed for the app to properly setup
     if(boardOn){return}
@@ -108,6 +102,7 @@ on_off.addEventListener('click',()=>{
 
 
 function setupOnClickListeners(){
+    //sets up all the onclick listeners
     sound_rows.addEventListener('click',clickTile);
     play_button.addEventListener('click',playBoard);
     reset_button.addEventListener('click',()=>{
@@ -166,7 +161,8 @@ function setupOnClickListeners(){
 
 function clickTile(e){
     // if a tile is clicked :
-    // 1. it changes color 2. I toggle its status on the board matrix
+    // 1. it changes color 
+    //2. I toggle its status on the board 
     // 3. I need to add the respective sound + position in the sample
     // so that it can be played when we press play
     if (e.target.classList.contains('tile')) {
@@ -189,18 +185,17 @@ function clickTile(e){
 }
 
 function clickName(e){
-    //function for when the user clicks the name of a sound, the sound is being played
+    // when the name of a sound is clicked it is also played
     if (e.target.className == 'sound-name'){
     let name_sound = e.target.nextElementSibling;
-    console.log(name_sound);
     playSound(name_sound.dataset.row);
     }
 }
 
 function playBoard(e){
-    // if play button is clicked change its color
-    //also change the play-state and depending on where 
-    //we land we trigger the start/stopBoard()
+    //if play is clicked it alters the play state
+    //then depending on where we are it starts/stops
+    //the board
     play = !play;
     if (play) {
         startBoard();
@@ -239,12 +234,13 @@ function stopBoard(){
 }
 
 function saveCurrentBoard(){
-    //if the user wants to save their temporary board only if not playing
+    //if the user wants to save their temporary board 
+    // can be used ONLY IF NOT PLAYING
 
     tempSave = [...onList]; // copies the current board
-    tempBpm = parseInt(bpm_range.value);
-    tempKit = current_kit;
-    console.log(tempBpm,tempKit,'here')
+    tempBpm = parseInt(bpm_range.value); //copies bpm
+    tempKit = current_kit; //copies kit
+
 
     savedSliders=[]
     let temp=[]
@@ -279,14 +275,16 @@ function saveCurrentBoard(){
     for (let dt of delay){
         temp.push(dt.delayTime.value)
     }
-    savedSliders.push(temp)
+    savedSliders.push(temp) // copies sliders
 }
 
 function loadSavedBoard(demoNum){
-    //demonumber : -1 if not for the demo 1...max_num for each demo 
-    //can't be loaded while playing
-    //if not playing just load every tile in the tempSave
-    //first reset the current sample
+    //demonum : -1 if not for the demo 1...max_num for each demo 
+    //CANT LOAD IF BOARD IS PLAYING
+    //depending on if it is called by a demo or not
+    //it loads either the saved button or 
+    //the demo board
+
     resetSample();
     if(demoNum==-1){
         sliderEdit(savedSliders);
@@ -300,7 +298,6 @@ function loadSavedBoard(demoNum){
     const toLoad = (demoNum == -1) ? tempSave : demoList[demoNum]["demoNotes"];
     
     for(let tile of toLoad){
-        console.log(tile)
         parent = tile.parentElement.parentElement;
         sound_row = +parent.dataset.row;
         curr_step = +tile.dataset.tile;
@@ -310,9 +307,12 @@ function loadSavedBoard(demoNum){
     onList = [...toLoad];
 }
 
-function changeGain(e) {//function for changing control value on user input
-    //control value is for all effects, so we change the effect depending on the class that the slider is
-    //we get set the control current value from the user input and then set the node value from the control array 
+function changeGain(e) {
+    //function for changing control value on user input
+    //control value is for all effects, 
+    //so we change the effect depending on the class that the slider is
+    //we get set the control current value from the user 
+    //input and then set the node value from the control array 
     if(e.target.className.startsWith('volume')) {//the sliders are for volume control
         control[parseInt(e.target.id.slice(-1))-1]=e.target.value;
         volumeNode[parseInt(e.target.id.slice(-1))-1].gain.value=control[parseInt(e.target.id.slice(-1))-1];
@@ -338,9 +338,12 @@ function changeGain(e) {//function for changing control value on user input
         delay[parseInt(e.target.id.slice(-1))-1].delayTime.value=control[parseInt(e.target.id.slice(-1))-1];
     }
 }
-function changeEff(){//function for changing the effect depending on the user input
-    //we must identify the effect the user chose, change the inner html value for UI, add min max value on slider depending on effect
-    //,set the value of the slider from the effect array so user does not lose his choices and finaly update the control array
+function changeEff(){
+    //function for changing the effect depending on the user input
+    //we must identify the effect the user chose, 
+    //change the inner html value for UI, add min max value on slider
+    // depending on effect set the value of the slider from the effect
+    // array so user does not lose his choices and finaly update the control array
     let gainerslabels=document.querySelectorAll('#gainerlab')
     for(let g of gainerslabels){
         g.innerHTML=effect_control.value;
@@ -441,7 +444,6 @@ function clickTab(e){
 
 function pressTab(e){
     //function for playing the sounds when some specific keys of the keyboard are pressed
-    console.log("you pressed a tab");
     if (context === undefined){
         return;
     }
@@ -503,15 +505,17 @@ function unpressTab(e){
 }
 
 function clickDemo(demoNum){
+    //if a demo is clicked
+    //load the kit -> load bpm -> load tiles -> load slider values
     changeKit(demoList[demoNum]["kit"]);
     bpmEdit(undefined,true,demoList[demoNum]["bpm_value"]);
     loadSavedBoard(demoNum);  
     sliderEdit(demoList[demoNum]["effectvals"]);
 }
-// -- other functions --
-
 
 function bar_animation(){
+    //the currently playing tile should be white
+    //make the previous one (previously playing) black
     bar_animator++;
     if(bar_animator == 16){
         bar_animator = 0;
@@ -554,7 +558,6 @@ function addInQueue(bar_iterator,next_bar_time){
     {
         let next_sample = sample_queue.shift();
         if(play){playStep(next_sample['sample'],next_sample['time']);}
-        console.log('removing from sample');
     }
     else{console.log('sample queue is empty');}
 
@@ -576,7 +579,6 @@ function playStep(step,start_time) {
     let convolver;
 
     for(let s of index){//for each s, connect the effects for the output
-        console.log(index["index"])
         let bs = context.createBufferSource();
         bs.buffer = s.item;
         convolver=context.createConvolver();
@@ -598,18 +600,19 @@ function playStep(step,start_time) {
 
 
 function updateCurrentSample(sound_row, curr_step, add) {
-    // adds the sound to the time it should be played at
-    // with the other sounds it will be played
+    //if it is asked to add , it adds the audio buffer 
+    //in the correct position -- correct step 
     if (add) { 
         currSample[curr_step][sound_row] = kit_collection[current_kit][sound_row];
     }
     else { 
+        //it removes the sound from the step 
         currSample[curr_step][sound_row] = 0; 
     }
 }
 
 function resetSample(){
-    
+    //resets the active tiles of the board
     for(let tile of onList){
         tile.classList.remove('tile-on');
     }
@@ -631,7 +634,7 @@ function resetSliders(){
 
 function playSound(kit_position) {
     // play the sound that corresponds to a specific row.
-    // before playing, connect each sound to the effects 
+    // before playing, connect all its effects
     const sound = context.createBufferSource();
     sound.buffer = kit_collection[current_kit][kit_position];
     let convolver=context.createConvolver();
@@ -671,6 +674,8 @@ function bpmEdit(input_clicked=undefined,isDemo=false,demoValue=0){
 
     animationWorker.postMessage(["change",calculateSoundDelay()]);
 }
+
+
 function sliderEdit(eff){
     let i=0
     for (let v of volumeNode){
@@ -709,13 +714,13 @@ function sliderEdit(eff){
 
 
 function calculateSoundDelay(){
-    //returns the time delay between 2 bars
+    //returns the time delay between 2 bars -- tempo timing
     return (60/tempo) * (time_signature/max_tiles);
 }
 
 
 async function getSound(path) {
-    // uses the fetch api to fetch the sounds from the url we give it
+    // uses the fetch api to fetch the sounds from our local drive
     const response = await fetch(path);
     const buffer = await response.arrayBuffer();
     const decodedAudio = await context.decodeAudioData(buffer);
@@ -771,14 +776,15 @@ function translateTileArray(tileArray){
 
 function initialize_curr_selection(){
     for (let i = 0; i < max_tiles; i++) {
-        currSample[i] = Array(8).fill(0);
+        currSample[i] = Array(6).fill(0);
     }
 }
 
 
 
 function initializeKitCollection(){
-    //initializes the object that contains all the kits-> kit_name : [....array with respective sounds....]
+    //initializes the object that contains 
+    //all the kits-> kit_name : [....array with respective sounds....]
     for(let kit of kit_type){
         kit_collection[kit] = [];
     }
@@ -795,7 +801,10 @@ function initializeRows(){
     console.log("rows and tiles mapped!")
 }
 
-function initialize_range(){//initialize the nodes needed for the effects, init the control array, connects all gainers to correct nodes 
+function initialize_range(){
+    //initialize the nodes needed for the effects,
+    //init the control array,
+    //connects all gainers to correct nodes 
     let gainers=document.querySelectorAll('[class*="volumegainer"]');
     let gainNode;
     let delaytemp;
@@ -835,6 +844,7 @@ function empty_ranges(){
 }
 
 function main(){
+    //initializes everything
     initialize_curr_selection();
     initializeRows();
     initializeKitCollection();
